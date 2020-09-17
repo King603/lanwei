@@ -1,0 +1,18 @@
+{
+	"success": true,
+	"commodityInfo": {
+		"commodityName": "商品名称",
+		"commodityID": "商品ID，产品编号",
+		"specificationsNum": "规格数量",
+		"specifications": [
+			{
+				"name": "规格名称",
+				"value": "规格值"
+			},
+			{
+				"name": "规格名称",
+				"value": "规格值"
+			}
+		]
+	}
+}
