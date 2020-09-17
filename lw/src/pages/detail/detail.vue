@@ -1,7 +1,10 @@
 <template>
   <view class="bg">
     <view class="Info">
-      <view class="commodity" :style="background"></view>
+      <view
+        class="commodity"
+        :style="{backgroundImage: 'url(' + (this.ImageURL || '../../static/img/image.png') + ');background-position: center center;background-size: contain;background-repeat: no-repeat;'}"
+      ></view>
       <view class="introduce">
         <p>商品名称：{{commodityName}}</p>
         <p>主要规格：{{Specifications}}</p>
@@ -21,20 +24,8 @@ export default {
       ImageURL: "",
       Specifications: "",
       specificationsNum: "",
-      LogisticsList: {},
+      LogisticsList: [],
     };
-  },
-  computed: {
-    background() {
-      let imgsrc = "../../static/img/image.png";
-      console.log(imgsrc);
-      return {
-        backgroundImage: "url(" + imgsrc + ")",
-        "background-position": "center center",
-        "background-size": "contain",
-        "background-repeat": "no-repeat",
-      };
-    },
   },
 };
 </script>
@@ -50,6 +41,9 @@ export default {
 }
 .commodity {
   width: 33.333%;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 .introduce {
   padding-left: 5px;
