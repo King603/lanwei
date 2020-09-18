@@ -34,7 +34,7 @@
       </view>
     </view>
     <view class="btn-row">
-      <button type="primary" class="primary" @tap="bindLogin">登录</button>
+      <button type="primary" class="primary" @click="bindLogin">登录</button>
     </view>
     <view class="action-row">
       <navigator url="../reg/reg">注册账号</navigator>
@@ -43,7 +43,7 @@
     </view>
     <view class="oauth-row" v-if="hasProvider" v-bind:style="{top: positionTop + 'px'}">
       <view class="oauth-image" v-for="provider in providerList" :key="provider.value">
-        <image :src="provider.image" @tap="oauth(provider.value)" />
+        <image :src="provider.image" @click="oauth(provider.value)" />
         <!-- #ifdef MP-WEIXIN -->
         <button v-if="!isDevtools" open-type="getUserInfo" @getuserinfo="getUserInfo"></button>
         <!-- #endif -->
@@ -231,7 +231,6 @@ export default {
         });
         return;
       }
-      let _self = this;
 
       uniCloud.callFunction({
         name: "user-center",
@@ -250,7 +249,7 @@ export default {
             uni.setStorageSync("uniIdToken", e.result.token);
             uni.setStorageSync("username", username);
             uni.setStorageSync("login_type", "online");
-            _self.toMain(username);
+            this.toMain(username);
           } else {
             uni.showModal({
               content: e.result.msg,
@@ -281,7 +280,7 @@ export default {
     },
     oauth(value) {
       uni.showModal({
-        content: "三方登录只演示登录api能力，暂未关联云端数据",
+        content: "尝试登陆请销后",
         showCancel: false,
       });
       console.log("三方登录只演示登录api能力，暂未关联云端数据");

@@ -47,7 +47,7 @@
         </view>
       </view>
       <view class="btn-row">
-        <button v-if="hasLogin" class="primary" type="primary" @tap="bindLogout">退出登录</button>
+        <button v-if="hasLogin" class="primary" type="primary" @click="bindLogout">退出登录</button>
       </view>
     </view>
   </view>

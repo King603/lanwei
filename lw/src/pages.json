@@ -19,6 +19,12 @@
 			}
 		},
 		{
+			"path": "pages/mySearch/mySearch",
+			"style": {
+				"navigationBarTitleText": "搜索"
+			}
+		},
+		{
 			"path": "pages/reg/reg",
 			"style": {
 				"navigationBarTitleText": "注册"

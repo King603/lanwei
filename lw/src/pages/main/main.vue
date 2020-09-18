@@ -1,17 +1,11 @@
 <template>
   <view class="content">
-    <view v-if="hasLogin" class="hello">
-      <view class="title">您好 {{userName}}，您已成功登录。</view>
+    <view class="hello">
+      <view v-show="!hasLogin" class="title">您好 游客。</view>
+      <view v-show="hasLogin" class="title">您好 {{userName}}，您已成功登录。</view>
       <view class="ul">
-        <view>这是 uni-app 带登录模板的示例App首页。</view>
-        <view>在 “我的” 中点击 “退出” 可以 “注销当前账户”</view>
-      </view>
-    </view>
-    <view v-if="!hasLogin" class="hello">
-      <view class="title">您好 游客。</view>
-      <view class="ul">
-        <view>这是 uni-app 带登录模板的示例App首页。</view>
-        <view>在 “我的” 中点击 “登录” 可以 “登录您的账户”</view>
+        <input type="text" v-model="search" />
+        <button @click="Search()">搜索</button>
       </view>
     </view>
   </view>
@@ -21,6 +15,11 @@
 import { mapState, mapMutations } from "vuex";
 
 export default {
+  data() {
+    return {
+      search: "",
+    };
+  },
   computed: mapState(["forcedLogin", "hasLogin", "userName"]),
   onLoad() {
     const loginType = uni.getStorageSync("login_type");
@@ -40,7 +39,7 @@ export default {
           console.log("checkToken success", e);
 
           if (e.result.code > 0) {
-            //token过期或token不合法，重新登录
+            // token过期或token不合法，重新登录
             if (this.forcedLogin) {
               uni.reLaunch({
                 url: "../login/login",
@@ -63,8 +62,11 @@ export default {
       this.guideToLogin();
     }
   },
+
   methods: {
     ...mapMutations(["login"]),
+
+    /** 登录设置 */
     guideToLogin() {
       uni.showModal({
         title: "未登录",
@@ -91,6 +93,14 @@ export default {
         },
       });
     },
+
+    /** 搜索查询 */
+    Search() {
+      console.log(121212);
+      uni.navigateTo({
+        url: "../mySearch/mySearch?search=" + this.search,
+      });
+    },
   },
 };
 </script>
@@ -114,6 +124,15 @@ export default {
 }
 
 .ul > view {
-  line-height: 25px;
+  display: inline-block;
+}
+
+.ul input {
+  border: 1px solid #000;
+  line-height: 15px;
+  width: 80%;
+}
+.ul img {
+  width: 20%;
 }
 </style>
