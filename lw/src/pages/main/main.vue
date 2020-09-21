@@ -3,9 +3,13 @@
     <view class="hello">
       <view v-show="!hasLogin" class="title">您好 游客。</view>
       <view v-show="hasLogin" class="title">您好 {{userName}}，您已成功登录。</view>
-      <view class="ul">
-        <input type="text" v-model="search" />
-        <button @click="Search()">搜索</button>
+      <!-- 搜索框 -->
+      <view class="ul m-icon m-icon-search" @click="Search">
+        <m-input type="text" placeholder="请输入搜索内容"></m-input>
+      </view>
+      <!-- 轮播图 -->
+      <view class="slideshow">
+        <m-slideshow :list="ImagesSrcArr"></m-slideshow>
       </view>
     </view>
   </view>
@@ -13,12 +17,22 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
+import mInput from "../../components/m-input.vue";
+import mSlideshow from "../../components/main-slideshow/m-slideshow/m-slideshow.vue";
 
 export default {
   data() {
     return {
-      search: "",
+      /**
+       * 轮播所需图片地址
+       * @type {string[]}
+       */
+      ImagesSrcArr: [],
     };
+  },
+  components: {
+    mInput,
+    mSlideshow,
   },
   computed: mapState(["forcedLogin", "hasLogin", "userName"]),
   onLoad() {
@@ -42,11 +56,11 @@ export default {
             // token过期或token不合法，重新登录
             if (this.forcedLogin) {
               uni.reLaunch({
-                url: "../login/login",
+                url: "../user/login/login",
               });
             } else {
               uni.navigateTo({
-                url: "../login/login",
+                url: "../user/login/login",
               });
             }
           }
@@ -62,7 +76,6 @@ export default {
       this.guideToLogin();
     }
   },
-
   methods: {
     ...mapMutations(["login"]),
 
@@ -82,11 +95,11 @@ export default {
              */
             if (this.forcedLogin) {
               uni.reLaunch({
-                url: "../login/login",
+                url: "../user/login/login",
               });
             } else {
               uni.navigateTo({
-                url: "../login/login",
+                url: "../user/login/login",
               });
             }
           }
@@ -98,7 +111,7 @@ export default {
     Search() {
       console.log(121212);
       uni.navigateTo({
-        url: "../mySearch/mySearch?search=" + this.search,
+        url: "../detail/mySearch/mySearch",
       });
     },
   },
@@ -106,33 +119,5 @@ export default {
 </script>
 
 <style>
-.hello {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-}
-
-.title {
-  color: #8f8f94;
-  margin-top: 25px;
-}
-
-.ul {
-  font-size: 15px;
-  color: #8f8f94;
-  margin-top: 25px;
-}
-
-.ul > view {
-  display: inline-block;
-}
-
-.ul input {
-  border: 1px solid #000;
-  line-height: 15px;
-  width: 80%;
-}
-.ul img {
-  width: 20%;
-}
+@import "./main.css";
 </style>
