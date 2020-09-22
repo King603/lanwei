@@ -1,0 +1,11 @@
+.red:before {
+	color: red;
+	content: '* ';
+}
+.input-row .title{
+	width: 100px;
+}
+.prompt{
+	color: #555;
+	font-size: 12px;
+}
