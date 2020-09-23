@@ -1,12 +1,30 @@
 <template>
   <view>
-    <view>{{mySearch}}</view>
+    <view class="ul m-icon m-icon-search">
+      <!-- 搜索框 -->
+      <m-input type="text" placeholder="请输入搜索内容"></m-input>
+      <button>搜索</button>
+    </view>
+		<!-- 扫码 -->
+		<m-scan :result="result"></m-scan>
   </view>
 </template>
 
 <script>
-import vue from "./mySearch.js";
-export default vue;
+import mInput from "../../../components/m-input.vue";
+import mScan from "../../../components/main/m-scan/m-scan.vue";
+export default {
+  data() {
+    return {
+      result: null,
+    };
+  },
+  components: {
+    mInput,
+    mScan,
+  },
+  methods: {},
+};
 </script>
 
 <style scoped>

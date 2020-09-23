@@ -16,7 +16,7 @@
       </view>
       <view class="input-row border">
         <text class="title red">绑定电话：</text>
-        <m-input type="phone" displayable v-model="PhoneNum" placeholder="请输入手机号码"></m-input>
+        <m-input type="phone" displayable v-model="phoneNum" placeholder="请输入手机号码"></m-input>
       </view>
     </view>
     <view class="btn-row">
@@ -27,6 +27,7 @@
 
 <script>
 import mInput from "../../../components/m-input.vue";
+import { config } from "../../../util/config";
 
 export default {
   components: {
@@ -37,7 +38,7 @@ export default {
       username: "",
       password: "",
       confirmPassword: "",
-      PhoneNum: "",
+      phoneNum: "",
     };
   },
   methods: {
@@ -53,10 +54,10 @@ export default {
         });
         return;
       }
-      if (this.password.length < 6) {
+      if (this.password.length < 6 || this.password.length > 18) {
         uni.showToast({
           icon: "none",
-          title: "密码最短为 6 个字符",
+          title: "密码长度为6-18位",
         });
         return;
       }
@@ -67,11 +68,11 @@ export default {
         });
         return;
       }
-      if (!/^1[3456789]\d{9}$/.test(this.PhoneNum)) {
+      if (!config.phoneRegex.test(this.phoneNum)) {
         uni.showToast({
-					icon:"none",
-					title:"电话号码输入错误"
-				});
+          icon: "none",
+          title: "电话号码输入错误",
+        });
         return;
       }
 
@@ -80,36 +81,84 @@ export default {
         passWord: this.password,
         phoneNum: this.phoneNum,
       };
-      uniCloud.callFunction({
-        name: "user-center",
-        data: {
-          action: "register",
-          params: params,
+      console.log(params);
+      this.request({
+        data: params,
+        method: "POST",
+        success: (e) => {
+          console.log("login success", e);
         },
-        success(e) {
-          console.log("注册成功", e);
+        url: "/111",
+      });
+      // uniCloud.callFunction({
+      //   name: "user-center",
+      //   data: {
+      //     action: "register",
+      //     params: params,
+      //   },
+      //   success(e) {
+      //     console.log("注册成功", e);
 
-          if (e.result.code === 0) {
-            uni.showToast({
-              title: "注册成功",
-            });
-            uni.setStorageSync("uniIdToken", e.result.token);
-            uni.setStorageSync("username", e.result.username);
-            uni.reLaunch({
-              url: "../main/main",
-            });
-          } else {
-            uni.showModal({
-              content: JSON.stringify(e.result),
-              showCancel: false,
-            });
-          }
-        },
+      //     if (e.result.code === 0) {
+      //       uni.showToast({
+      //         title: "注册成功",
+      //       });
+      //       uni.setStorageSync("uniIdToken", e.result.token);
+      //       uni.setStorageSync("username", e.result.username);
+      //       uni.reLaunch({
+      //         url: "../main/main",
+      //       });
+      //     } else {
+      //       uni.showModal({
+      //         content: JSON.stringify(e.result),
+      //         showCancel: false,
+      //       });
+      //     }
+      //   },
+      //   fail(e) {
+      //     uni.showModal({
+      //       content: JSON.stringify(e),
+      //       showCancel: false,
+      //     });
+      //   },
+      // });
+    },
+    /**
+     * @param {{
+				url: string;
+				data: {};
+				method: "OPTIONS" | "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "TRACE" | "CONNECT";
+    	  success(result: UniApp.RequestSuccessCallbackResult): void;
+			}}
+     */
+    request({ data, success, method, url }) {
+      // 显示标题栏加载状态
+      uni.showNavigationBarLoading();
+
+      let sessionKey = uni.getStorageSync("sessionKey");
+      console.log("session key: ", sessionKey);
+
+      // 数据交互
+      uni.request({
+        url: config.apiHost + url,
+        data,
+        // header: {
+        //   // 微信头标签数据，必填
+        //   "content-type": "application/json;charset=UTF-8",
+        //   "X-HXCharge-Authentication": uni
+        //     .getStorageSync("sessionKey")
+        //     .toString(),
+        // },
+        method, // 请求类型
+        success,
         fail(e) {
           uni.showModal({
             content: JSON.stringify(e),
             showCancel: false,
           });
+        },
+        complete() {
+          uni.hideNavigationBarLoading();
         },
       });
     },

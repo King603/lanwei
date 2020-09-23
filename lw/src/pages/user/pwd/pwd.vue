@@ -33,6 +33,7 @@
 // export default vue;
 
 import mInput from "../../../components/m-input.vue";
+import { config, confin } from "../../../util/config.js";
 
 export default {
   components: {
@@ -53,17 +54,17 @@ export default {
         });
         return;
       }
-      if (!/^1[3456789]\d{9}$/.test(this.phone)) {
+      if (!config.phoneRegex.test(this.phone)) {
         uni.showToast({
           icon: "none",
           title: "手机号码填写错误",
         });
         return;
       }
-      if (this.password.length < 6) {
+      if (this.password.length < 6 || this.password.length > 18) {
         uni.showToast({
           icon: "none",
-          title: "密码最短为 6 个字符",
+          title: "密码长度为6-18位",
         });
         return;
       }

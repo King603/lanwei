@@ -27,8 +27,18 @@
 </template>
 
 <script>
-import vue from "./detail.js";
-export default vue;
+export default {
+  data() {
+    return {
+      commodityName: "",
+      commodityID: "",
+      ImageURL: "",
+      Specifications: "",
+      specificationsNum: "",
+      LogisticsList: [],
+    };
+  },
+};
 </script>
 
 <style scoped>

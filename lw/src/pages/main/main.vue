@@ -11,6 +11,7 @@
       <view class="slideshow">
         <m-slideshow :list="ImagesSrcArr"></m-slideshow>
       </view>
+
     </view>
   </view>
 </template>
@@ -18,7 +19,7 @@
 <script>
 import { mapState, mapMutations } from "vuex";
 import mInput from "../../components/m-input.vue";
-import mSlideshow from "../../components/main-slideshow/m-slideshow/m-slideshow.vue";
+import mSlideshow from "../../components/main/m-slideshow/m-slideshow.vue";
 
 export default {
   data() {
@@ -106,7 +107,6 @@ export default {
         },
       });
     },
-
     /** 搜索查询 */
     Search() {
       console.log(121212);

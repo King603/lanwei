@@ -54,8 +54,47 @@
 </template>
 
 <script>
-import vue from "./user.js";
-export default vue;
+import { mapState, mapMutations } from "vuex";
+
+export default {
+  data() {
+    return {
+      avatarUrl: "../../static/img/logo.png",
+      inviteUrl: "",
+    };
+  },
+  computed: {
+    ...mapState(["hasLogin", "forcedLogin", "userName"]),
+  },
+
+  methods: {
+    ...mapMutations(["logout"]),
+    bindLogin() {
+      if (!this.hasLogin) {
+        uni.navigateTo({
+          url: "./login/login",
+        });
+      }
+    },
+    bindLogout() {
+      const loginType = uni.getStorageSync("login_type");
+      if (loginType === "local") {
+        this.logout();
+        if (this.forcedLogin) {
+          uni.reLaunch({
+            url: "./login/login",
+          });
+        }
+        return;
+      }
+    },
+    toInvite() {
+      uni.navigateTo({
+        url: "/pages/user/invite/invite",
+      });
+    },
+  },
+};
 </script>
 
 <style scoped>

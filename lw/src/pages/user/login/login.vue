@@ -107,7 +107,7 @@ export default {
        * 使用 absolute 定位，并且设置 bottom 值进行定位。软键盘弹出时，底部会因为窗口变化而被顶上来。
        * 反向使用 top 进行定位，可以避免此问题。
        */
-			this.positionTop = uni.getSystemInfoSync().windowHeight - 100;
+      this.positionTop = uni.getSystemInfoSync().windowHeight - 100;
     },
     sendSmsCode() {
       if (this.codeDuration) {
@@ -116,21 +116,18 @@ export default {
           showCancel: false,
         });
       }
-      if (!/^1\d{10}$/.test(this.mobile)) {
+      if (!config.phoneRegex.test(this.mobile)) {
         uni.showModal({
           content: "手机号码填写错误",
           showCancel: false,
         });
         return;
       }
-      uniCloud.callFunction({
-        name: "user-center",
+      this.request({
         data: {
-          action: "sendSmsCode",
-          params: {
-            mobile: this.mobile,
-          },
+          phoneNum: this.mobile,
         },
+        method: "POST",
         success: (e) => {
           if (e.result.code == 0) {
             uni.showModal({
@@ -154,12 +151,7 @@ export default {
             });
           }
         },
-        fail(e) {
-          uni.showModal({
-            content: "验证码发送失败",
-            showCancel: false,
-          });
-        },
+        url: "/login",
       });
     },
     /** 密码登录 */
@@ -222,7 +214,7 @@ export default {
     },
     /** 免密登录 */
     loginBySms() {
-      if (!/^1[3456789]\d{9}$/.test(this.mobile)) {
+      if (!config.phoneRegex.test(this.mobile)) {
         uni.showModal({
           content: "手机号码填写错误",
           showCancel: false,
@@ -293,10 +285,10 @@ export default {
     },
     /**
      * @param {{
-				url: string;
-				data: {};
-				method: "OPTIONS" | "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "TRACE" | "CONNECT";
-    	  success(result: UniApp.RequestSuccessCallbackResult): void;
+        url: string;
+        data: {};
+        method: "OPTIONS" | "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "TRACE" | "CONNECT";
+        success(result: UniApp.RequestSuccessCallbackResult): void;
 			}}
      */
     request({ data, success, method, url }) {
@@ -306,13 +298,6 @@ export default {
       uni.request({
         url: config.apiHost + url,
         data,
-        header: {
-          // 微信头标签数据，必填
-          "content-type": "application/json;charset=UTF-8",
-          "X-HXCharge-Authentication": uni
-            .getStorageSync("sessionKey")
-            .toString(),
-        },
         method, // 请求类型
         success,
         fail(e) {
@@ -320,6 +305,9 @@ export default {
             content: JSON.stringify(e),
             showCancel: false,
           });
+        },
+        complete() {
+          uni.hideNavigationBarLoading();
         },
       });
     },
