@@ -98,5 +98,5 @@ export default {
 </script>
 
 <style scoped>
-@import "./user.css";
+@import url("./user.css");
 </style>

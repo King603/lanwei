@@ -7,16 +7,20 @@
       @input="onInput"
       class="m-input-input"
       :placeholder="placeholder"
-      :password="type==='password'&&!showPassword"
+      :password="type === 'password' && !showPassword"
       @focus="onFocus"
       @blur="onBlur"
     />
     <!-- 优先显示密码可见按钮 -->
-    <view v-if="clearable&&!displayable&&value.length" class="m-input-icon">
+    <view v-if="clearable && !displayable && value.length" class="m-input-icon">
       <m-icon color="#666666" type="clear" @click="clear"></m-icon>
     </view>
     <view v-if="displayable" class="m-input-icon">
-      <m-icon :style="{color:showPassword?'#666666':'#cccccc'}" type="eye" @click="display"></m-icon>
+      <m-icon
+        :style="{ color: showPassword ? '#666666' : '#cccccc' }"
+        type="eye"
+        @click="display"
+      ></m-icon>
     </view>
   </view>
 </template>
@@ -96,12 +100,10 @@ export default {
       this.isFocus = true;
     },
     onBlur() {
-      this.$nextTick(() => {
-        this.isFocus = false;
-      });
+      this.$nextTick(() => (this.isFocus = false));
     },
     onInput(e) {
-			console.log(e.detail)
+      console.log(e.detail);
       this.$emit("input", e.detail.value);
     },
     onSearch() {

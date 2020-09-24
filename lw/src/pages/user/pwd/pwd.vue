@@ -3,22 +3,44 @@
     <view class="input-group">
       <view class="input-row border">
         <text class="title">账号：</text>
-        <m-input type="text" focus clearable v-model="userName" placeholder="请输入原始账号"></m-input>
+        <m-input
+          type="text"
+          focus
+          clearable
+          v-model="account"
+          placeholder="请输入原始账号"
+        ></m-input>
       </view>
 
       <view class="input-row border">
         <text class="title">绑定的手机号：</text>
-        <m-input type="text" focus clearable v-model="phone" placeholder="请输入手机号"></m-input>
+        <m-input
+          type="text"
+          focus
+          clearable
+          v-model="phone"
+          placeholder="请输入手机号"
+        ></m-input>
       </view>
 
       <view class="input-row border">
         <text class="title">密码：</text>
-        <m-input type="password" displayable v-model="password" placeholder="请输入密码"></m-input>
+        <m-input
+          type="password"
+          displayable
+          v-model="password"
+          placeholder="请输入密码"
+        ></m-input>
       </view>
 
       <view class="input-row border">
         <text class="title">确认密码：</text>
-        <m-input type="password" displayable v-model="confirmPassword" placeholder="请确认密码"></m-input>
+        <m-input
+          type="password"
+          displayable
+          v-model="confirmPassword"
+          placeholder="请确认密码"
+        ></m-input>
       </view>
     </view>
 
@@ -33,7 +55,7 @@
 // export default vue;
 
 import mInput from "../../../components/m-input.vue";
-import { config, confin } from "../../../util/config.js";
+import config from "../../../util/config.js";
 
 export default {
   components: {
@@ -41,13 +63,15 @@ export default {
   },
   data() {
     return {
-      userName: "",
+      account: "",
+      password: "",
+      confirmPassword: "",
       phone: "",
     };
   },
   methods: {
     findPassword() {
-      if (this.userName.length < 3) {
+      if (!config.accountRegex.test(this.account)) {
         uni.showToast({
           icon: "none",
           title: "账号最短为 3 个字符",
@@ -61,7 +85,7 @@ export default {
         });
         return;
       }
-      if (this.password.length < 6 || this.password.length > 18) {
+      if (!config.passwordRegex.text(this.password)) {
         uni.showToast({
           icon: "none",
           title: "密码长度为6-18位",
@@ -75,6 +99,28 @@ export default {
         });
         return;
       }
+      uni.showNavigationBarLoading();
+
+      uni.request({
+        url: config.apiHost + config.pwd,
+        data: {
+          account: this.account,
+          password: this.password,
+          phoneNum: this.phone,
+        },
+        success(e) {
+          console.log(e);
+        },
+        fail(e) {
+          uni.showModal({
+            content: JSON.stringify(e),
+            showCancel: false,
+          });
+        },
+        complete() {
+          uni.hideNavigationBarLoading();
+        },
+      });
     },
   },
 };

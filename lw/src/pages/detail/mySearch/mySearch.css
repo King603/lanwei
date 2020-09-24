@@ -2,7 +2,12 @@
 	font-family: uniicons;
 	font-weight: normal;
 	font-style: normal;
-	src: url('https://img-cdn-qiniu.dcloud.net.cn/fonts/uni.ttf?t=1536565627510') format('truetype');
+	src: url('~@/static/fonts/uni.ttf') format('truetype');
+}
+
+.bg{
+	width: 100%;
+	background-color: #aaa;
 }
 
 .m-icon {
@@ -25,9 +30,13 @@
 .ul {
 	font-size: 12px;
 	color: #8f8f94;
-	margin-top: 25px;
+	/* margin-top: 25px; */
 	display: flex;
 	border-radius: 10px;
-	padding: 5px;
+	/* padding: 5px; */
 	background-color: #999;
+}
+
+.main {
+	display: flex;
 }

@@ -4,19 +4,51 @@
     <view class="input-group">
       <view class="input-row border">
         <text class="title red">账号：</text>
-        <m-input type="text" focus clearable v-model="username" placeholder="请输入账号"></m-input>
+        <m-input
+          type="text"
+          focus
+          clearable
+          v-model="account"
+          placeholder="请输入账号"
+        ></m-input>
+      </view>
+      <view class="input-row border">
+        <text class="title">昵称：</text>
+        <m-input
+          type="text"
+          focus
+          clearable
+          v-model="userName"
+          placeholder="请输入昵称"
+        ></m-input>
       </view>
       <view class="input-row border">
         <text class="title">密码：</text>
-        <m-input type="password" displayable v-model="password" placeholder="请输入密码"></m-input>
+        <m-input
+          type="password"
+          displayable
+          v-model="password"
+          placeholder="请输入6到18位的密码"
+        ></m-input>
       </view>
       <view class="input-row border">
         <text class="title">确认密码：</text>
-        <m-input type="password" displayable v-model="confirmPassword" placeholder="请确认密码"></m-input>
+        <m-input
+          type="password"
+          displayable
+          v-model="confirmPassword"
+          placeholder="请确认密码"
+        ></m-input>
       </view>
       <view class="input-row border">
-        <text class="title red">绑定电话：</text>
-        <m-input type="phone" displayable v-model="phoneNum" placeholder="请输入手机号码"></m-input>
+        <text class="title red">绑定手机号：</text>
+        <m-input
+          type="phone"
+          focus
+          clearable
+          v-model="phoneNum"
+          placeholder="请输入手机号码"
+        ></m-input>
       </view>
     </view>
     <view class="btn-row">
@@ -26,8 +58,9 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 import mInput from "../../../components/m-input.vue";
-import { config } from "../../../util/config";
+import config from "../../../util/config";
 
 export default {
   components: {
@@ -35,29 +68,38 @@ export default {
   },
   data() {
     return {
-      username: "",
+      account: "",
+      userName: "",
       password: "",
       confirmPassword: "",
       phoneNum: "",
     };
   },
   methods: {
+    ...mapMutations(["login"]),
     register() {
       /**
        * 客户端对账号信息进行一些必要的校验。
        * 实际开发中，根据业务需要进行处理，这里仅做示例。
        */
-      if (this.username.length < 3) {
+      if (!config.accountRegex.test(this.account)) {
         uni.showToast({
           icon: "none",
           title: "账号最短为 3 个字符",
         });
         return;
       }
-      if (this.password.length < 6 || this.password.length > 18) {
+      if (this.userName == "") {
         uni.showToast({
           icon: "none",
-          title: "密码长度为6-18位",
+          title: "请取一个好听的昵称",
+        });
+        return;
+      }
+      if (!config.passwordRegex.test(this.password)) {
+        uni.showToast({
+          icon: "none",
+          title: "密码长度为 6-18 位",
         });
         return;
       }
@@ -77,56 +119,55 @@ export default {
       }
 
       const params = {
-        userName: this.username,
-        passWord: this.password,
+        account: this.account,
+        userName: this.userName,
+        password: this.password,
         phoneNum: this.phoneNum,
       };
+
       console.log(params);
       this.request({
         data: params,
         method: "POST",
         success: (e) => {
           console.log("login success", e);
+          switch (e.data.code) {
+            case 1: // 注册成功
+              uni.showModal({
+                content: e.data.msg,
+                showCancel: false,
+              });
+              uni.setStorageSync("username", e.data.username);
+              uni.setStorageSync("login_type", "online");
+              this.toMain(e.data.username);
+              console.log(123);
+              break;
+            case -1: // 注册失败
+              uni.showModal({
+                content: e.data.msg,
+                showCancel: false,
+              });
+              console.log(321);
+              break;
+          }
         },
-        url: "/111",
+        url: config.reg,
       });
-      // uniCloud.callFunction({
-      //   name: "user-center",
-      //   data: {
-      //     action: "register",
-      //     params: params,
-      //   },
-      //   success(e) {
-      //     console.log("注册成功", e);
-
-      //     if (e.result.code === 0) {
-      //       uni.showToast({
-      //         title: "注册成功",
-      //       });
-      //       uni.setStorageSync("uniIdToken", e.result.token);
-      //       uni.setStorageSync("username", e.result.username);
-      //       uni.reLaunch({
-      //         url: "../main/main",
-      //       });
-      //     } else {
-      //       uni.showModal({
-      //         content: JSON.stringify(e.result),
-      //         showCancel: false,
-      //       });
-      //     }
-      //   },
-      //   fail(e) {
-      //     uni.showModal({
-      //       content: JSON.stringify(e),
-      //       showCancel: false,
-      //     });
-      //   },
-      // });
+    },
+    toMain(userName) {
+      this.login(userName);
+      /**
+       * 强制登录时使用reLaunch方式跳转过来
+       * 返回首页也使用reLaunch方式
+       */
+      uni.reLaunch({
+        url: "../../main/main",
+      });
     },
     /**
      * @param {{
 				url: string;
-				data: {};
+				data: *;
 				method: "OPTIONS" | "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "TRACE" | "CONNECT";
     	  success(result: UniApp.RequestSuccessCallbackResult): void;
 			}}
@@ -135,20 +176,10 @@ export default {
       // 显示标题栏加载状态
       uni.showNavigationBarLoading();
 
-      let sessionKey = uni.getStorageSync("sessionKey");
-      console.log("session key: ", sessionKey);
-
       // 数据交互
       uni.request({
         url: config.apiHost + url,
         data,
-        // header: {
-        //   // 微信头标签数据，必填
-        //   "content-type": "application/json;charset=UTF-8",
-        //   "X-HXCharge-Authentication": uni
-        //     .getStorageSync("sessionKey")
-        //     .toString(),
-        // },
         method, // 请求类型
         success,
         fail(e) {

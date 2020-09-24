@@ -2,35 +2,58 @@
   <view class="content">
     <view class="login-type">
       <view
-        v-for="(item,index) in loginTypeList"
+        v-for="(item, index) in loginTypeList"
         :key="index"
         @click="loginType = index"
-        :class="{act: loginType === index}"
+        :class="{ act: loginType === index }"
         class="login-type-btn"
-      >{{item}}</view>
+        >{{ item }}</view
+      >
     </view>
     <view class="input-group" v-if="loginType === 0">
       <view class="input-row border">
         <text class="title">手机：</text>
-        <m-input class="m-input" type="text" clearable focus v-model="mobile" placeholder="请输入手机号码"></m-input>
+        <m-input
+          class="m-input"
+          type="text"
+          clearable
+          focus
+          v-model="mobile"
+          placeholder="请输入手机号码"
+        ></m-input>
       </view>
       <view class="input-row">
         <text class="title">验证码：</text>
-        <m-input type="text" v-model="code" placeholder="请输入验证码"></m-input>
-        <view
-          class="send-code-btn"
-          @click="sendSmsCode"
-        >{{codeDuration ? codeDuration + 's' : '发送验证码' }}</view>
+        <m-input
+          type="text"
+          v-model="code"
+          placeholder="请输入验证码"
+        ></m-input>
+        <view class="send-code-btn" @click="sendSmsCode">{{
+          codeDuration ? codeDuration + "s" : "发送验证码"
+        }}</view>
       </view>
     </view>
     <view class="input-group" v-else>
       <view class="input-row border">
         <text class="title">账号：</text>
-        <m-input class="m-input" type="text" clearable focus v-model="username" placeholder="请输入账号"></m-input>
+        <m-input
+          class="m-input"
+          type="text"
+          clearable
+          focus
+          v-model="account"
+          placeholder="请输入账号"
+        ></m-input>
       </view>
       <view class="input-row">
         <text class="title">密码：</text>
-        <m-input type="password" displayable v-model="password" placeholder="请输入密码"></m-input>
+        <m-input
+          type="password"
+          displayable
+          v-model="password"
+          placeholder="请输入密码"
+        ></m-input>
       </view>
     </view>
     <view class="btn-row">
@@ -38,14 +61,26 @@
     </view>
     <view class="action-row">
       <navigator url="../reg/reg">注册账号</navigator>
-      <text v-show="loginType==1">|</text>
-      <navigator url="../pwd/pwd" v-show="loginType==1">忘记密码</navigator>
+      <text v-show="loginType == 1">|</text>
+      <navigator url="../pwd/pwd" v-show="loginType == 1">忘记密码</navigator>
     </view>
-    <view class="oauth-row" v-if="hasProvider" v-bind:style="{top: positionTop + 'px'}">
-      <view class="oauth-image" v-for="provider in providerList" :key="provider.value">
+    <view
+      class="oauth-row"
+      v-if="hasProvider"
+      v-bind:style="{ top: positionTop + 'px' }"
+    >
+      <view
+        class="oauth-image"
+        v-for="provider in providerList"
+        :key="provider.value"
+      >
         <image :src="provider.image" @click="oauth(provider.value)" />
         <!-- #ifdef MP-WEIXIN -->
-        <button v-if="!isDevtools" open-type="getUserInfo" @getuserinfo="getUserInfo"></button>
+        <button
+          v-if="!isDevtools"
+          open-type="getUserInfo"
+          @getuserinfo="getUserInfo"
+        ></button>
         <!-- #endif -->
       </view>
     </view>
@@ -55,7 +90,7 @@
 <script>
 import { mapState, mapMutations } from "vuex";
 import mInput from "../../../components/m-input.vue";
-import { config } from "../../../util/config.js";
+import config from "../../../util/config.js";
 
 export default {
   components: {
@@ -69,7 +104,7 @@ export default {
       code: "",
       providerList: [],
       hasProvider: false,
-      username: "",
+      account: "",
       password: "",
       positionTop: 0,
       isDevtools: false,
@@ -98,7 +133,7 @@ export default {
           }
         },
         fail: (err) => {
-          console.error("获取服务供应商失败：" + JSON.stringify(err));
+          console.error("获取服务失败：" + JSON.stringify(err));
         },
       });
     },
@@ -129,7 +164,7 @@ export default {
         },
         method: "POST",
         success: (e) => {
-          if (e.result.code == 0) {
+          if (e.data.code == 0) {
             uni.showModal({
               content: "验证码发送成功，请注意查收",
               showCancel: false,
@@ -146,24 +181,24 @@ export default {
             }, 1000);
           } else {
             uni.showModal({
-              content: "验证码发送失败：" + e.result.msg,
+              content: "验证码发送失败：" + e.data.msg,
               showCancel: false,
             });
           }
         },
-        url: "/login",
+        url: config.login(this.loginType),
       });
     },
     /** 密码登录 */
     loginByPwd() {
-      if (this.username.length < 3) {
+      if (!config.accountRegex.test(this.account)) {
         uni.showToast({
           icon: "none",
           title: "账号最短为 3 个字符",
         });
         return;
       }
-      if (this.password.length < 6 || this.password.length > 18) {
+      if (!config.passwordRegex.test(this.password)) {
         uni.showToast({
           icon: "none",
           title: "密码长度为6-18位",
@@ -173,44 +208,26 @@ export default {
 
       this.request({
         data: {
-          username: this.username,
+          account: this.account,
           password: this.password,
         },
         method: "POST",
         success: (e) => {
           console.log("login success", e);
+          if (e.data.code == 1) {
+            uni.setStorageSync("username", e.data.username);
+            uni.setStorageSync("login_type", "online");
+            this.toMain(this.username);
+          } else {
+            uni.showModal({
+              content: e.data.msg,
+              showCancel: false,
+            });
+            console.log("登录失败", e);
+          }
         },
-        url: "/login",
+        url: config.login,
       });
-
-      // uniCloud.callFunction({
-      //   name: "user-center",
-      //   data: {
-      //     action: "login",
-      //     params: data,
-      //   },
-      //   success: (e) => {
-      //     console.log("login success", e);
-      //     if (e.result.code == 0) {
-      //       uni.setStorageSync("uniIdToken", e.result.token);
-      //       uni.setStorageSync("username", e.result.username);
-      //       uni.setStorageSync("login_type", "online");
-      //       _self.toMain(_self.username);
-      //     } else {
-      //       uni.showModal({
-      //         content: e.result.msg,
-      //         showCancel: false,
-      //       });
-      //       console.log("登录失败", e);
-      //     }
-      //   },
-      //   fail(e) {
-      //     uni.showModal({
-      //       content: JSON.stringify(e),
-      //       showCancel: false,
-      //     });
-      //   },
-      // });
     },
     /** 免密登录 */
     loginBySms() {
@@ -237,41 +254,20 @@ export default {
         method: "POST",
         success: (e) => {
           console.log("login success", e);
+          if (e.data.code == 0) {
+            uni.setStorageSync("username", e.data.username);
+            uni.setStorageSync("login_type", "online");
+            this.toMain(e.data.username);
+          } else {
+            uni.showModal({
+              content: e.data.msg,
+              showCancel: false,
+            });
+            console.log("登录失败", e);
+          }
         },
-        url: "/login",
+        url: config.login,
       });
-      // uniCloud.callFunction({
-      //   name: "user-center",
-      //   data: {
-      //     action: "loginBySms",
-      //     params: {
-      //       mobile: this.mobile,
-      //       code: this.code,
-      //     },
-      //   },
-      //   success: (e) => {
-      //     console.log("login success", e);
-      //     if (e.result.code == 0) {
-      //       const username = e.result.username || "新用户";
-      //       uni.setStorageSync("uniIdToken", e.result.token);
-      //       uni.setStorageSync("username", username);
-      //       uni.setStorageSync("login_type", "online");
-      //       this.toMain(username);
-      //     } else {
-      //       uni.showModal({
-      //         content: e.result.msg,
-      //         showCancel: false,
-      //       });
-      //       console.log("登录失败", e);
-      //     }
-      //   },
-      //   fail(e) {
-      //     uni.showModal({
-      //       content: JSON.stringify(e),
-      //       showCancel: false,
-      //     });
-      //   },
-      // });
     },
     bindLogin() {
       switch (this.loginType) {

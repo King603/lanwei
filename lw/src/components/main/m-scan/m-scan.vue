@@ -1,6 +1,6 @@
 <template>
   <view>
-    <button @click="scan">扫码</button>
+    <button @click="scan" type="primary">扫码</button>
   </view>
 </template>
 
@@ -8,7 +8,7 @@
 import { config } from "../../../util/config";
 export default {
   props: {
-    result:{},
+    result: {},
   },
   methods: {
     /**调起条码扫描 */

@@ -1,13 +1,14 @@
 <template>
-  <view>
-    <view class="ul m-icon m-icon-search">
-      <!-- 搜索框 -->
-      <m-input type="text" placeholder="请输入搜索内容"></m-input>
-      <button>搜索</button>
-    </view>
-		<!-- 扫码 -->
-		<m-scan :result="result"></m-scan>
-  </view>
+  <view class="bg">
+    <view class="main">
+      <view class="ul m-icon m-icon-search">
+        <!-- 搜索框 -->
+        <m-input type="text" placeholder="请输入搜索内容"></m-input>
+        <button type="primary" class="primary">搜索</button>
+      </view>
+      <!-- 扫码 -->
+      <m-scan :result="result"></m-scan> </view
+  ></view>
 </template>
 
 <script>
