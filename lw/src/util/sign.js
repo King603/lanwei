@@ -3,7 +3,7 @@
  * @param {string} IMEI 			国际移动设备识别码
  * @param {string} deviceType 设备类型
  */
-export default function (IMEI, deviceType) {
+export function getSign(IMEI, deviceType) {
 	let now = new Date();
 	let year = now.getFullYear();
 	/**

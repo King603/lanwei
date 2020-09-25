@@ -61,6 +61,7 @@
 import { mapMutations } from "vuex";
 import mInput from "../../../components/m-input.vue";
 import config from "../../../util/config";
+import { getSign } from "../../../util/sign.js";
 
 export default {
   components: {
@@ -73,6 +74,9 @@ export default {
       password: "",
       confirmPassword: "",
       phoneNum: "",
+      sign: null,
+      IMEI: "",
+      model: "",
     };
   },
   methods: {
@@ -117,12 +121,17 @@ export default {
         });
         return;
       }
+      
+      this.aaa();
+
+      this.sign = getSign(this.IMEI, this.model);
 
       const params = {
         account: this.account,
-        userName: this.userName,
+        username: this.userName,
         password: this.password,
         phoneNum: this.phoneNum,
+        sign: this.sign,
       };
 
       console.log(params);
@@ -137,9 +146,10 @@ export default {
                 content: e.data.msg,
                 showCancel: false,
               });
-              uni.setStorageSync("username", e.data.username);
+              console.log(e.data.data[0].username);
+              uni.setStorageSync("username", e.data.data[0].username);
               uni.setStorageSync("login_type", "online");
-              this.toMain(e.data.username);
+              this.toMain(e.data.data[0].username);
               console.log(123);
               break;
             case -1: // 注册失败
@@ -154,6 +164,53 @@ export default {
         url: config.reg,
       });
     },
+    async aaa() {
+			let my = this;
+      // 获取设备信息
+      // #ifdef APP-PLUS
+      await plus.device.getInfo({
+        success: (e) => {
+          console.log("getDeviceInfo success: " + JSON.stringify(e));
+          my.IMEI = e.imei;
+          my.model = e.model;
+        },
+        fail(e) {
+          console.log("getDeviceInfo failed: " + JSON.stringify(e));
+        },
+      });
+      // #endif
+      // #ifdef MP-WEIXIN
+      await uni.login({
+        success: (res) => {
+          //code值(5分钟失效)
+          console.info(res.code);
+          //小程序secret
+          let secret = "1a5567978saf65c43s8s2397er1332ce";
+          //wx接口路径
+          let url =
+            "https://api.weixin.qq.com/sns/jscode2session?appid=" +
+            config.appId +
+            "&secret=" +
+            config.appSecret +
+            "&js_code=" +
+            res.code +
+            "&grant_type=authorization_code";
+          uni.request({
+            url: url, // 请求路径
+            method: "GET", //请求方式
+            success: (result) => {
+              //响应成功
+              //这里就获取到了openid了
+              console.info(result.data.openid);
+              my.IMEI = result.data.openid;
+              my.model = result.data.model;
+            },
+            fail: (err) => {}, //失败
+          });
+        },
+      });
+      // #endif
+    },
     toMain(userName) {
       this.login(userName);
       /**
@@ -161,7 +218,7 @@ export default {
        * 返回首页也使用reLaunch方式
        */
       uni.reLaunch({
-        url: "../../main/main",
+        url: "../user",
       });
     },
     /**

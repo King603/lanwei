@@ -5,6 +5,8 @@ export default {
 	uploadHost: '',
 	/**原始微信APPId */
 	appId: 'wxe473d1e074b41e1f',
+	/**小程序秘钥 */
+	appSecret: "f47f6fca20b0a755362b32e9c49ccbc7",
 	/**代理上传地址 */
 	proxyUploadUrl: '',
 	/**

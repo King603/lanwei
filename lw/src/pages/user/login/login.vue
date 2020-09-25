@@ -107,43 +107,12 @@ export default {
       account: "",
       password: "",
       positionTop: 0,
-      isDevtools: false,
       codeDuration: 0,
     };
   },
   computed: mapState(["forcedLogin"]),
   methods: {
     ...mapMutations(["login"]),
-    initProvider() {
-      const filters = ["weixin", "qq", "sinaweibo"];
-      uni.getProvider({
-        service: "oauth",
-        success: (res) => {
-          console.log(res);
-          if (res.provider && res.provider.length) {
-            for (let i = 0; i < res.provider.length; i++) {
-              if (~filters.indexOf(res.provider[i])) {
-                this.providerList.push({
-                  value: res.provider[i],
-                  image: "../../../static/img/" + res.provider[i] + ".png",
-                });
-              }
-            }
-            this.hasProvider = true;
-          }
-        },
-        fail: (err) => {
-          console.error("获取服务失败：" + JSON.stringify(err));
-        },
-      });
-    },
-    initPosition() {
-      /**
-       * 使用 absolute 定位，并且设置 bottom 值进行定位。软键盘弹出时，底部会因为窗口变化而被顶上来。
-       * 反向使用 top 进行定位，可以避免此问题。
-       */
-      this.positionTop = uni.getSystemInfoSync().windowHeight - 100;
-    },
     sendSmsCode() {
       if (this.codeDuration) {
         uni.showModal({
@@ -215,6 +184,7 @@ export default {
         success: (e) => {
           console.log("login success", e);
           if (e.data.code == 1) {
+            console.log(e.data.username);
             uni.setStorageSync("username", e.data.username);
             uni.setStorageSync("login_type", "online");
             this.toMain(this.username);
@@ -226,7 +196,7 @@ export default {
             console.log("登录失败", e);
           }
         },
-        url: config.login,
+        url: config.login(this.loginType),
       });
     },
     /** 免密登录 */
@@ -254,10 +224,11 @@ export default {
         method: "POST",
         success: (e) => {
           console.log("login success", e);
-          if (e.data.code == 0) {
-            uni.setStorageSync("username", e.data.username);
+          if (e.data.code == 1) {
+            let { username } = e.data.data[0];
+            uni.setStorageSync("username", username);
             uni.setStorageSync("login_type", "online");
-            this.toMain(e.data.username);
+            this.toMain(username);
           } else {
             uni.showModal({
               content: e.data.msg,
@@ -369,13 +340,6 @@ export default {
         uni.navigateBack();
       }
     },
-  },
-  onReady() {
-    this.initPosition();
-    this.initProvider();
-    // #ifdef MP-WEIXIN
-    this.isDevtools = uni.getSystemInfoSync().platform === "devtools";
-    // #endif
   },
 };
 </script>
