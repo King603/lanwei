@@ -1,6 +1,6 @@
 <template>
   <view>
-    <button @click="scan" type="primary">扫码</button>
+    <button @click="scan" type="scan">扫码</button>
   </view>
 </template>
 
@@ -27,4 +27,5 @@ export default {
 </script>
 
 <style>
+
 </style>
