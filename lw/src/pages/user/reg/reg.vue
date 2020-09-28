@@ -74,9 +74,8 @@ export default {
       password: "",
       confirmPassword: "",
       phoneNum: "",
-      sign: null,
+      clientType: "",
       IMEI: "",
-      model: "",
     };
   },
   methods: {
@@ -86,13 +85,13 @@ export default {
        * 客户端对账号信息进行一些必要的校验。
        * 实际开发中，根据业务需要进行处理，这里仅做示例。
        */
-      if (!config.accountRegex.test(this.account)) {
-        uni.showToast({
-          icon: "none",
-          title: "账号最短为 3 个字符",
-        });
-        return;
-      }
+      // if (!config.accountRegex.test(this.account)) {
+      //   uni.showToast({
+      //     icon: "none",
+      //     title: "账号最短为 3 个字符",
+      //   });
+      //   return;
+      // }
       if (this.userName == "") {
         uni.showToast({
           icon: "none",
@@ -121,17 +120,92 @@ export default {
         });
         return;
       }
-      
-      this.aaa();
 
-      this.sign = getSign(this.IMEI, this.model);
+      // #ifdef APP-PLUS
+      this.app();
+      // #endif
+      // #ifdef MP-WEIXIN
+      this.weixin();
+      // #endif
+    },
+    app() {
+      new Promise(async (resolve, reject) => {
+        await plus.device.getInfo({
+          success: (e) => {
+            console.log("getDeviceInfo success: " + JSON.stringify(e));
+            this.IMEI = e.imei;
+            this.clientType = e.model;
+            let aaa = uni.getSystemInfoSync();
+            console.log(aaa);
+            resolve();
+          },
+          fail(e) {
+            console.log("getDeviceInfo failed: " + JSON.stringify(e));
+            reject();
+          },
+        });
+      }).then(this.aaa);
+    },
+    weixin() {
+      new Promise(async (resolve, reject) => {
+        await uni.login({
+          success: (res) => {
+            //code值(5分钟失效)
+            console.info(res.code);
+            //小程序secret
+            let secret = "1a5567978saf65c43s8s2397er1332ce";
+            //wx接口路径
+            let url =
+              "https://api.weixin.qq.com/sns/jscode2session?appid=" +
+              config.appId +
+              "&secret=" +
+              config.appSecret +
+              "&js_code=" +
+              res.code +
+              "&grant_type=authorization_code";
+            uni.request({
+              url: url, // 请求路径
+              method: "GET", //请求方式
+              success: (result) => {
+                //响应成功
+                //这里就获取到了openid了
+                console.info(result.data.openid);
+                let arr = result.data.openid.split("");
+                let str = "";
+                for (let i = 0; i < 17; i++) {
+                  str += arr[i];
+                }
+                this.IMEI = str;
+                this.clientType = "WeChat applet";
+                resolve();
+              },
+              fail: (err) => {
+                console.log(err);
+                reject();
+              }, //失败
+            });
+          },
+        });
+      }).then(() => {
+        this.aaa();
+      });
+    },
+    aaa() {
+      console.log(this.IMEI, this.clientType);
+      let { serial, hash } = getSign(this.IMEI, this.clientType);
+      console.log(serial);
 
       const params = {
         account: this.account,
         username: this.userName,
         password: this.password,
         phoneNum: this.phoneNum,
-        sign: this.sign,
+        serial: hash,
+        imei: serial.imei,
+        clientType: serial.clientType,
+        random: serial.random,
+        date: serial.date,
+        time: serial.time,
       };
 
       console.log(params);
@@ -163,53 +237,6 @@ export default {
         },
         url: config.reg,
       });
-    },
-    async aaa() {
-			let my = this;
-      // 获取设备信息
-      // #ifdef APP-PLUS
-      await plus.device.getInfo({
-        success: (e) => {
-          console.log("getDeviceInfo success: " + JSON.stringify(e));
-          my.IMEI = e.imei;
-          my.model = e.model;
-        },
-        fail(e) {
-          console.log("getDeviceInfo failed: " + JSON.stringify(e));
-        },
-      });
-      // #endif
-      // #ifdef MP-WEIXIN
-      await uni.login({
-        success: (res) => {
-          //code值(5分钟失效)
-          console.info(res.code);
-          //小程序secret
-          let secret = "1a5567978saf65c43s8s2397er1332ce";
-          //wx接口路径
-          let url =
-            "https://api.weixin.qq.com/sns/jscode2session?appid=" +
-            config.appId +
-            "&secret=" +
-            config.appSecret +
-            "&js_code=" +
-            res.code +
-            "&grant_type=authorization_code";
-          uni.request({
-            url: url, // 请求路径
-            method: "GET", //请求方式
-            success: (result) => {
-              //响应成功
-              //这里就获取到了openid了
-              console.info(result.data.openid);
-              my.IMEI = result.data.openid;
-              my.model = result.data.model;
-            },
-            fail: (err) => {}, //失败
-          });
-        },
-      });
-      // #endif
     },
     toMain(userName) {
       this.login(userName);
