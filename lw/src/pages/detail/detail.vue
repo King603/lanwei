@@ -1,7 +1,7 @@
 <template>
   <view class="bg">
     <!-- 扫码 -->
-    <m-scan :result="result"></m-scan>
+    <m-scan @my-scan="getData"></m-scan>
     <view v-show="isScan">
       <view class="Info">
         <view
@@ -9,19 +9,19 @@
           :style="{
             backgroundImage:
               'url(' +
-              ImageURL +
+              result.ImageURL +
               ');background-position: center center;background-size: contain;background-repeat: no-repeat;',
           }"
         ></view>
         <view class="introduce">
-          <p class="title">商品名称：{{ commodityName }}</p>
-          <p>主要规格：{{ Specifications }}</p>
-          <p>规格数量：{{ specificationsNum }}</p>
-          <p>产品编号：{{ getID }}</p>
+          <p class="title">商品名称：{{ result.commodityName }}</p>
+          <p>主要规格：{{ result.Specifications }}</p>
+          <p>规格数量：{{ result.specificationsNum }}</p>
+          <p>产品编号：{{ isScan && getID(result.commodityID) }}</p>
         </view>
       </view>
       <view
-        v-for="(Logistics, index) in LogisticsList"
+        v-for="(Logistics, index) in result.LogisticsList"
         :key="index"
         class="list"
         @click="to(index)"
@@ -63,49 +63,70 @@ import mScan from "../../components/main/m-scan/m-scan.vue";
 export default {
   data() {
     return {
-      commodityName: "1525556",
-      commodityID: "1011222233333",
-      ImageURL: "../../static/img/image.png",
-      Specifications: "8596666",
-      specificationsNum: "566",
-      LogisticsList: [
-        {
-          nodeId: "0001",
-          nodeName: "生产",
-          nodeArr: ["厦门XX服装公司", "南京XX服装公司"],
-          state: "生产中",
-        },
-        {
-          nodeId: "0002",
-          nodeName: "物流",
-          nodeArr: ["XX物流有限公司厦门站", "XX物流有限公司南京站"],
-          state: "运输中",
-        },
-        {
-          nodeId: "0003",
-          nodeName: "仓储",
-          nodeArr: ["XX物流有限公司南京仓库", "南京XX超市仓库"],
-          state: "已进仓",
-        },
-        {
-          nodeId: "0004",
-          nodeName: "零售",
-          nodeArr: ["XX物流有限公司上海", "上海XX超市"],
-          state: "已上架",
-        },
-      ],
+      result: {
+        // commodityName: "1525556",
+        // commodityID: "1011222233333",
+        // ImageURL: "../../static/img/image.png",
+        // Specifications: "8596666",
+        // specificationsNum: "566",
+        // LogisticsList: [
+        //   {
+        //     nodeId: "0001",
+        //     nodeName: "生产",
+        //     nodeArr: ["厦门XX服装公司", "南京XX服装公司"],
+        //     state: "生产中",
+        //   },
+        //   {
+        //     nodeId: "0002",
+        //     nodeName: "物流",
+        //     nodeArr: ["XX物流有限公司厦门站", "XX物流有限公司南京站"],
+        //     state: "运输中",
+        //   },
+        //   {
+        //     nodeId: "0003",
+        //     nodeName: "仓储",
+        //     nodeArr: ["XX物流有限公司南京仓库", "南京XX超市仓库"],
+        //     state: "已进仓",
+        //   },
+        //   {
+        //     nodeId: "0004",
+        //     nodeName: "零售",
+        //     nodeArr: ["XX物流有限公司上海", "上海XX超市"],
+        //     state: "已上架",
+        //   },
+        // ],
+      },
       className: "",
       right: ">",
-      result: null,
-      isScan: true,
+      isScan: false,
     };
   },
   components: {
     mScan,
   },
-  computed: {
-    getID() {
-      let arr = this.commodityID.split("");
+  computed: {},
+  methods: {
+    to(index) {},
+    // getImg() {
+    //   setTimeout(
+    //     () => (this.result.ImageURL = "../../static/img/beibao.jpg"),
+    //     5000
+    //   );
+    // },
+    getData(data) {
+      console.log(data);
+      let str = data;
+      try {
+        this.result = str;
+      } catch (e) {
+        console.log(e);
+      }
+
+      console.log(this.result, typeof this.result);
+      this.isScan = true;
+    },
+    getID(id) {
+      let arr = id.split("");
       let str = "";
       for (let i = 0, j = 1; i < arr.length; i++) {
         str = str.padStart(j++, arr[arr.length - 1 - i]);
@@ -114,14 +135,8 @@ export default {
       return str;
     },
   },
-  methods: {
-    to(index) {},
-    getImg() {
-      setTimeout(() => (this.ImageURL = "../../static/img/beibao.jpg"), 5000);
-    },
-  },
   onReady() {
-    this.getImg();
+    // this.getImg();
   },
 };
 </script>

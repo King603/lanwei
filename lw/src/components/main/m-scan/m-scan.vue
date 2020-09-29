@@ -5,20 +5,19 @@
 </template>
 
 <script>
-import { config } from "../../../util/config";
 export default {
-  props: {
-    result: {},
-  },
   methods: {
     /**调起条码扫描 */
     scan() {
       uni.scanCode({
-        scanType: "barCode",
+        scanType: "qrCode",
         success: (res) => {
-          this.result = res.result;
           console.log("条码类型：" + res.scanType);
           console.log("条码内容：" + res.result);
+
+          let str = res.result.slice(1);
+console.log(str)
+          res.result = this.$emit("my-scan", JSON.parse(str));
         },
       });
     },
@@ -27,5 +26,4 @@ export default {
 </script>
 
 <style>
-
 </style>

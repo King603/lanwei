@@ -74,9 +74,8 @@ export default {
       password: "",
       confirmPassword: "",
       phoneNum: "",
-      clientType: "",
+      clientType: 0,
       IMEI: "",
-      model: "",
     };
   },
   methods: {
@@ -122,30 +121,134 @@ export default {
         return;
       }
 
-      this.weixin().then(() => {
-        this.aaa();
+      // #ifdef APP-PLUS
+      return this.app().then(() => {
+        console.log(this.IMEI, this.clientType);
+        let { sign, hash } = getSign(this.IMEI, this.clientType);
+        console.log(sign);
+
+        const params = {
+          account: this.account,
+          username: this.userName,
+          password: this.password,
+          phoneNum: this.phoneNum,
+          serial: hash,
+          imei: sign.imei,
+          clientType: sign.clientType,
+          random: sign.random,
+          date: sign.date,
+          time: sign.time,
+        };
+
+        console.log(params);
+        this.request({
+          data: params,
+          method: "POST",
+          success: (e) => {
+            console.log("login success", e);
+            switch (e.data.code) {
+              case 1: // 注册成功
+                uni.showModal({
+                  content: e.data.msg,
+                  showCancel: false,
+                });
+                console.log(e.data.data[0].username);
+                uni.setStorageSync("username", e.data.data[0].username);
+                uni.setStorageSync("login_type", "online");
+                this.toMain(e.data.data[0].username);
+                console.log(123);
+                break;
+              case -1: // 注册失败
+                uni.showModal({
+                  content: e.data.msg,
+                  showCancel: false,
+                });
+                console.log(321);
+                break;
+            }
+          },
+          url: config.reg,
+        });
       });
+      // #endif
+      // #ifdef MP-WEIXIN
+      return this.weixin().then(() => {
+        console.log(this.IMEI, this.clientType);
+        let { imei, clientType, random, date, time, hash } = getSign(
+          this.IMEI,
+          this.clientType
+        );
+        console.log();
+
+        const params = {
+          account: this.account,
+          username: this.userName,
+          password: this.password,
+          phoneNum: this.phoneNum,
+          serial: hash,
+          imei: imei,
+          clientType: clientType,
+          random: random,
+          date: date,
+          time: time,
+        };
+
+        console.log(params);
+        this.request({
+          data: params,
+          method: "POST",
+          success: (e) => {
+            console.log("login success", e);
+            switch (e.data.code) {
+              case 1: // 注册成功
+                uni.showModal({
+                  content: e.data.msg,
+                  showCancel: false,
+								});
+								let userName = e.data.data[0].username || "新用户";
+                uni.setStorageSync("username", userName);
+                uni.setStorageSync("login_type", "online");
+                this.toMain(userName);
+                console.log(123);
+                break;
+              case -1: // 注册失败
+                uni.showModal({
+                  content: e.data.msg,
+                  showCancel: false,
+                });
+                console.log(321);
+                break;
+            }
+          },
+          url: config.reg,
+        });
+      });
+      // #endif
     },
     app() {
-      return new Promise(() => {
-        plus.device.getInfo({
+      return new Promise(async (resolve, reject) => {
+        await plus.device.getInfo({
           success: (e) => {
             console.log("getDeviceInfo success: " + JSON.stringify(e));
             this.IMEI = e.imei;
-            this.model = e.model;
+            this.clientType = e.model + "APP-PLUS";
+            resolve();
           },
           fail(e) {
             console.log("getDeviceInfo failed: " + JSON.stringify(e));
+            reject();
           },
         });
       });
     },
     weixin() {
-      return new Promise((resolve, reject) => {
-        uni.login({
+      return new Promise(async (resolve, reject) => {
+        await uni.login({
           success: (res) => {
             //code值(5分钟失效)
             console.info(res.code);
+            //小程序secret
+            let secret = "1a5567978saf65c43s8s2397er1332ce";
             //wx接口路径
             let url =
               "https://api.weixin.qq.com/sns/jscode2session?appid=" +
@@ -162,70 +265,22 @@ export default {
                 //响应成功
                 //这里就获取到了openid了
                 console.info(result.data.openid);
+                let arr = result.data.openid.split("");
                 let str = "";
                 for (let i = 0; i < 17; i++) {
-                  str += result.data.openid[i];
+                  str += arr[i];
                 }
                 this.IMEI = str;
-                this.model = "WeChat applet";
+                this.clientType = 3;
                 resolve();
               },
               fail: (err) => {
+                console.log(err);
                 reject();
               }, //失败
             });
           },
         });
-      });
-    },
-    aaa() {
-      // 获取设备信息
-      let { imei, clientType, random, date, time, hash } = getSign(
-        this.IMEI,
-        this.model
-      );
-
-      const params = {
-        account: this.account,
-        username: this.userName,
-        password: this.password,
-        phoneNum: this.phoneNum,
-        serial: hash,
-        imei: imei,
-        clientType: clientType,
-        random: random,
-        date: date,
-        time: time,
-      };
-
-      console.log(params);
-      this.request({
-        data: params,
-        method: "POST",
-        success: (e) => {
-          console.log("login success", e);
-          switch (e.data.code) {
-            case 1: // 注册成功
-              uni.showModal({
-                content: e.data.msg,
-                showCancel: false,
-              });
-              console.log(e.data.data[0].username);
-              uni.setStorageSync("username", e.data.data[0].username);
-              uni.setStorageSync("login_type", "online");
-              this.toMain(e.data.data[0].username);
-              console.log(123);
-              break;
-            case -1: // 注册失败
-              uni.showModal({
-                content: e.data.msg,
-                showCancel: false,
-              });
-              console.log(321);
-              break;
-          }
-        },
-        url: config.reg,
       });
     },
     toMain(userName) {

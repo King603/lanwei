@@ -91,6 +91,7 @@
 import { mapState, mapMutations } from "vuex";
 import mInput from "../../../components/m-input.vue";
 import config from "../../../util/config.js";
+import { getSign } from "../../../util/sign";
 
 export default {
   components: {
@@ -108,6 +109,8 @@ export default {
       password: "",
       positionTop: 0,
       codeDuration: 0,
+      IMEI: "",
+      clientType: 0,
     };
   },
   computed: mapState(["forcedLogin"]),
@@ -174,33 +177,48 @@ export default {
         });
         return;
       }
+      (() => {
+        // #ifdef APP-PLUS
+        return this.app();
+        // #endif
+        // #ifdef MP-WEIXIN
+        return this.weixin();
+        // #endif
+      })().then(async () => {
+        let { hash, imei, clientType, random, date, time } = getSign(
+          this.IMEI,
+          this.clientType
+        );
 
-      // #ifdef APP-PLUS
-      this.app();
-      // #endif
-      // #ifdef MP-WEIXIN
-      this.weixin();
-      // #endif
-
-      this.request({
-        data: {
+        const params = {
           account: this.account,
           password: this.password,
-        },
-        method: "POST",
-        success: (e) => {
-          this.success(e);
-        },
-        url: config.login(this.loginType),
+          serial: hash,
+          imei: imei,
+          clientType: clientType,
+          random: random,
+          date: date,
+          time: time,
+        };
+        console.log(params);
+        await this.request({
+          data: params,
+          method: "POST",
+          success: (e) => this.success(e),
+          url: config.login(this.loginType),
+        });
       });
     },
+    /**
+     * @param {UniApp.RequestSuccessCallbackResult} e
+     */
     success(e) {
       console.log("login success", e);
       if (e.data.code == 1) {
-        let { username } = e.data.data[0];
-        uni.setStorageSync("username", username);
+        let userName = e.data.data[0].username || "新用户";
+        uni.setStorageSync("username", userName);
         uni.setStorageSync("login_type", "online");
-        this.toMain(username);
+        this.toMain(userName);
       } else {
         uni.showModal({
           content: e.data.msg,
@@ -226,34 +244,34 @@ export default {
         return;
       }
 
-      // #ifdef APP-PLUS
-      this.app();
-      // #endif
-      // #ifdef MP-WEIXIN
-      this.weixin();
-      // #endif
-
-      this.request({
-        data: {
-          mobile: this.mobile,
-          code: this.code,
-        },
-        method: "POST",
-        success: (e) => {
-          this.success(e);
-        },
-        url: config.login(this.loginType),
+      (() => {
+        // #ifdef APP-PLUS
+        return this.app();
+        // #endif
+        // #ifdef MP-WEIXIN
+        return this.weixin();
+        // #endif
+      })().then(() => {
+        this.request({
+          data: {
+            mobile: this.mobile,
+            code: this.code,
+          },
+          method: "POST",
+          success: (e) => {
+            this.success(e);
+          },
+          url: config.login(this.loginType),
+        });
       });
     },
     app() {
-      new Promise(async (resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         await plus.device.getInfo({
           success: (e) => {
             console.log("getDeviceInfo success: " + JSON.stringify(e));
             this.IMEI = e.imei;
-            this.clientType = e.model;
-            let aaa = uni.getSystemInfoSync();
-            console.log(aaa);
+            this.clientType = e.model + "APP-PLUS";
             resolve();
           },
           fail(e) {
@@ -261,12 +279,10 @@ export default {
             reject();
           },
         });
-      }).then(() => {
-        this.aaa();
       });
     },
     weixin() {
-      new Promise(async (resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         await uni.login({
           success: (res) => {
             //code值(5分钟失效)
@@ -295,7 +311,7 @@ export default {
                   str += arr[i];
                 }
                 this.IMEI = str;
-                this.clientType = "WeChat applet";
+                this.clientType = 3;
                 resolve();
               },
               fail: (err) => {
@@ -305,8 +321,6 @@ export default {
             });
           },
         });
-      }).then(() => {
-        this.aaa();
       });
     },
     bindLogin() {
@@ -379,7 +393,6 @@ export default {
       });
     },
     getUserInfo({ detail }) {
-      console.log("三方登录只演示登录api能力，暂未关联云端数据");
       console.log(detail);
       if (detail.userInfo) {
         this.loginLocal(detail.userInfo.nickName);
