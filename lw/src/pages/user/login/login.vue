@@ -190,6 +190,7 @@ export default {
           this.clientType
         );
 
+<<<<<<< HEAD
         const params = {
           account: this.account,
           password: this.password,
@@ -219,6 +220,34 @@ export default {
         uni.setStorageSync("username", userName);
         uni.setStorageSync("login_type", "online");
         this.toMain(userName);
+=======
+      // #ifdef APP-PLUS
+      this.app();
+      // #endif
+      // #ifdef MP-WEIXIN
+      this.weixin();
+      // #endif
+
+      this.request({
+        data: {
+          account: this.account,
+          password: this.password,
+        },
+        method: "POST",
+        success: (e) => {
+          this.success(e);
+        },
+        url: config.login(this.loginType),
+      });
+    },
+    success(e) {
+      console.log("login success", e);
+      if (e.data.code == 1) {
+        let { username } = e.data.data[0];
+        uni.setStorageSync("username", username);
+        uni.setStorageSync("login_type", "online");
+        this.toMain(username);
+>>>>>>> e19ace8b1b54909aa0ba9781f07bd9b3d0d5e85c
       } else {
         uni.showModal({
           content: e.data.msg,
@@ -244,6 +273,7 @@ export default {
         return;
       }
 
+<<<<<<< HEAD
       (() => {
         // #ifdef APP-PLUS
         return this.app();
@@ -267,11 +297,40 @@ export default {
     },
     app() {
       return new Promise(async (resolve, reject) => {
+=======
+      // #ifdef APP-PLUS
+      this.app();
+      // #endif
+      // #ifdef MP-WEIXIN
+      this.weixin();
+      // #endif
+
+      this.request({
+        data: {
+          mobile: this.mobile,
+          code: this.code,
+        },
+        method: "POST",
+        success: (e) => {
+          this.success(e);
+        },
+        url: config.login(this.loginType),
+      });
+    },
+    app() {
+      new Promise(async (resolve, reject) => {
+>>>>>>> e19ace8b1b54909aa0ba9781f07bd9b3d0d5e85c
         await plus.device.getInfo({
           success: (e) => {
             console.log("getDeviceInfo success: " + JSON.stringify(e));
             this.IMEI = e.imei;
+<<<<<<< HEAD
             this.clientType = e.model + "APP-PLUS";
+=======
+            this.clientType = e.model;
+            let aaa = uni.getSystemInfoSync();
+            console.log(aaa);
+>>>>>>> e19ace8b1b54909aa0ba9781f07bd9b3d0d5e85c
             resolve();
           },
           fail(e) {
@@ -279,10 +338,19 @@ export default {
             reject();
           },
         });
+<<<<<<< HEAD
       });
     },
     weixin() {
       return new Promise(async (resolve, reject) => {
+=======
+      }).then(() => {
+        this.aaa();
+      });
+    },
+    weixin() {
+      new Promise(async (resolve, reject) => {
+>>>>>>> e19ace8b1b54909aa0ba9781f07bd9b3d0d5e85c
         await uni.login({
           success: (res) => {
             //code值(5分钟失效)
@@ -311,7 +379,11 @@ export default {
                   str += arr[i];
                 }
                 this.IMEI = str;
+<<<<<<< HEAD
                 this.clientType = 3;
+=======
+                this.clientType = "WeChat applet";
+>>>>>>> e19ace8b1b54909aa0ba9781f07bd9b3d0d5e85c
                 resolve();
               },
               fail: (err) => {
@@ -321,6 +393,11 @@ export default {
             });
           },
         });
+<<<<<<< HEAD
+=======
+      }).then(() => {
+        this.aaa();
+>>>>>>> e19ace8b1b54909aa0ba9781f07bd9b3d0d5e85c
       });
     },
     bindLogin() {

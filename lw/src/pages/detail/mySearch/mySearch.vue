@@ -15,6 +15,7 @@ import mInput from "../../../components/m-input.vue";
 export default {
   data() {
     return {
+<<<<<<< HEAD
       commodityName: "1525556",
       commodityID: "1011222233333",
       ImageURL: "../../static/img/image.png",
@@ -50,6 +51,9 @@ export default {
       right: ">",
       result: null,
       isScan: true,
+=======
+      info: "",
+>>>>>>> e19ace8b1b54909aa0ba9781f07bd9b3d0d5e85c
     };
   },
   components: {
