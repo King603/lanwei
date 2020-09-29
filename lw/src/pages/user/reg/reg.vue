@@ -74,11 +74,7 @@ export default {
       password: "",
       confirmPassword: "",
       phoneNum: "",
-<<<<<<< HEAD
       clientType: 0,
-=======
-      clientType: "",
->>>>>>> e19ace8b1b54909aa0ba9781f07bd9b3d0d5e85c
       IMEI: "",
     };
   },
@@ -126,7 +122,6 @@ export default {
       }
 
       // #ifdef APP-PLUS
-<<<<<<< HEAD
       return this.app().then(() => {
         console.log(this.IMEI, this.clientType);
         let { sign, hash } = getSign(this.IMEI, this.clientType);
@@ -286,122 +281,6 @@ export default {
             });
           },
         });
-=======
-      this.app();
-      // #endif
-      // #ifdef MP-WEIXIN
-      this.weixin();
-      // #endif
-    },
-    app() {
-      new Promise(async (resolve, reject) => {
-        await plus.device.getInfo({
-          success: (e) => {
-            console.log("getDeviceInfo success: " + JSON.stringify(e));
-            this.IMEI = e.imei;
-            this.clientType = e.model;
-            let aaa = uni.getSystemInfoSync();
-            console.log(aaa);
-            resolve();
-          },
-          fail(e) {
-            console.log("getDeviceInfo failed: " + JSON.stringify(e));
-            reject();
-          },
-        });
-      }).then(this.aaa);
-    },
-    weixin() {
-      new Promise(async (resolve, reject) => {
-        await uni.login({
-          success: (res) => {
-            //code值(5分钟失效)
-            console.info(res.code);
-            //小程序secret
-            let secret = "1a5567978saf65c43s8s2397er1332ce";
-            //wx接口路径
-            let url =
-              "https://api.weixin.qq.com/sns/jscode2session?appid=" +
-              config.appId +
-              "&secret=" +
-              config.appSecret +
-              "&js_code=" +
-              res.code +
-              "&grant_type=authorization_code";
-            uni.request({
-              url: url, // 请求路径
-              method: "GET", //请求方式
-              success: (result) => {
-                //响应成功
-                //这里就获取到了openid了
-                console.info(result.data.openid);
-                let arr = result.data.openid.split("");
-                let str = "";
-                for (let i = 0; i < 17; i++) {
-                  str += arr[i];
-                }
-                this.IMEI = str;
-                this.clientType = "WeChat applet";
-                resolve();
-              },
-              fail: (err) => {
-                console.log(err);
-                reject();
-              }, //失败
-            });
-          },
-        });
-      }).then(() => {
-        this.aaa();
-      });
-    },
-    aaa() {
-      console.log(this.IMEI, this.clientType);
-      let { serial, hash } = getSign(this.IMEI, this.clientType);
-      console.log(serial);
-
-      const params = {
-        account: this.account,
-        username: this.userName,
-        password: this.password,
-        phoneNum: this.phoneNum,
-        serial: hash,
-        imei: serial.imei,
-        clientType: serial.clientType,
-        random: serial.random,
-        date: serial.date,
-        time: serial.time,
-      };
-
-      console.log(params);
-      this.request({
-        data: params,
-        method: "POST",
-        success: (e) => {
-          console.log("login success", e);
-          switch (e.data.code) {
-            case 1: // 注册成功
-              uni.showModal({
-                content: e.data.msg,
-                showCancel: false,
-              });
-              console.log(e.data.data[0].username);
-              uni.setStorageSync("username", e.data.data[0].username);
-              uni.setStorageSync("login_type", "online");
-              this.toMain(e.data.data[0].username);
-              console.log(123);
-              break;
-            case -1: // 注册失败
-              uni.showModal({
-                content: e.data.msg,
-                showCancel: false,
-              });
-              console.log(321);
-              break;
-          }
-        },
-        url: config.reg,
->>>>>>> e19ace8b1b54909aa0ba9781f07bd9b3d0d5e85c
       });
     },
     toMain(userName) {

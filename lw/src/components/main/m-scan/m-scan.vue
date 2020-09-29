@@ -16,7 +16,7 @@ export default {
           console.log("条码内容：" + res.result);
 
           let str = res.result.slice(1);
-console.log(str)
+          console.log(str);
           res.result = this.$emit("my-scan", JSON.parse(str));
         },
       });
@@ -26,5 +26,4 @@ console.log(str)
 </script>
 
 <style>
-
 </style>
