@@ -1,0 +1,42 @@
+{
+	"locationEnabled": true,
+	"screenWidth": 393,
+	"benchmarkLevel": 12,
+	"screenHeight": 659,
+	"windowHeight": 588,
+	"bluetoothEnabled": false,
+	"errMsg": "getSystemInfo:ok",
+	"language": "zh_CN",
+	"microphoneAuthorized": true,
+	"version": "7.0.19",
+	"cameraAuthorized": true,
+	"system": "Android 8.0.0",
+	"fontSizeSetting": 16,
+	"locationAuthorized": true,
+	"pixelRatio": 2.75,
+	"notificationAuthorized": true,
+	"model": "HUAWEI NXT-DL00",
+	"statusBarHeight": 24,
+	"deviceOrientation": "portrait",
+	"wifiEnabled": true,
+	"safeArea": {
+		"width": 393,
+		"right": 393,
+		"top": 0,
+		"left": 0,
+		"bottom": 659,
+		"height": 659
+	},
+	"brand": "HUAWEI",
+	"windowWidth": 393,
+	"screenTop": 71,
+	"platform": "android",
+	"SDKVersion": "2.13.0",
+	"devicePixelRatio": 2.75,
+	"safeAreaInsets": {
+		"top": 0,
+		"left": 0,
+		"right": 0,
+		"bottom": -71
+	}
+}

@@ -107,43 +107,12 @@ export default {
       account: "",
       password: "",
       positionTop: 0,
-      isDevtools: false,
       codeDuration: 0,
     };
   },
   computed: mapState(["forcedLogin"]),
   methods: {
     ...mapMutations(["login"]),
-    initProvider() {
-      const filters = ["weixin", "qq", "sinaweibo"];
-      uni.getProvider({
-        service: "oauth",
-        success: (res) => {
-          console.log(res);
-          if (res.provider && res.provider.length) {
-            for (let i = 0; i < res.provider.length; i++) {
-              if (~filters.indexOf(res.provider[i])) {
-                this.providerList.push({
-                  value: res.provider[i],
-                  image: "../../../static/img/" + res.provider[i] + ".png",
-                });
-              }
-            }
-            this.hasProvider = true;
-          }
-        },
-        fail: (err) => {
-          console.error("获取服务失败：" + JSON.stringify(err));
-        },
-      });
-    },
-    initPosition() {
-      /**
-       * 使用 absolute 定位，并且设置 bottom 值进行定位。软键盘弹出时，底部会因为窗口变化而被顶上来。
-       * 反向使用 top 进行定位，可以避免此问题。
-       */
-      this.positionTop = uni.getSystemInfoSync().windowHeight - 100;
-    },
     sendSmsCode() {
       if (this.codeDuration) {
         uni.showModal({
@@ -206,6 +175,13 @@ export default {
         return;
       }
 
+      // #ifdef APP-PLUS
+      this.app();
+      // #endif
+      // #ifdef MP-WEIXIN
+      this.weixin();
+      // #endif
+
       this.request({
         data: {
           account: this.account,
@@ -213,21 +189,25 @@ export default {
         },
         method: "POST",
         success: (e) => {
-          console.log("login success", e);
-          if (e.data.code == 1) {
-            uni.setStorageSync("username", e.data.username);
-            uni.setStorageSync("login_type", "online");
-            this.toMain(this.username);
-          } else {
-            uni.showModal({
-              content: e.data.msg,
-              showCancel: false,
-            });
-            console.log("登录失败", e);
-          }
+          this.success(e);
         },
-        url: config.login,
+        url: config.login(this.loginType),
       });
+    },
+    success(e) {
+      console.log("login success", e);
+      if (e.data.code == 1) {
+        let { username } = e.data.data[0];
+        uni.setStorageSync("username", username);
+        uni.setStorageSync("login_type", "online");
+        this.toMain(username);
+      } else {
+        uni.showModal({
+          content: e.data.msg,
+          showCancel: false,
+        });
+        console.log("登录失败", e);
+      }
     },
     /** 免密登录 */
     loginBySms() {
@@ -246,6 +226,13 @@ export default {
         return;
       }
 
+      // #ifdef APP-PLUS
+      this.app();
+      // #endif
+      // #ifdef MP-WEIXIN
+      this.weixin();
+      // #endif
+
       this.request({
         data: {
           mobile: this.mobile,
@@ -253,20 +240,73 @@ export default {
         },
         method: "POST",
         success: (e) => {
-          console.log("login success", e);
-          if (e.data.code == 0) {
-            uni.setStorageSync("username", e.data.username);
-            uni.setStorageSync("login_type", "online");
-            this.toMain(e.data.username);
-          } else {
-            uni.showModal({
-              content: e.data.msg,
-              showCancel: false,
-            });
-            console.log("登录失败", e);
-          }
+          this.success(e);
         },
-        url: config.login,
+        url: config.login(this.loginType),
+      });
+    },
+    app() {
+      new Promise(async (resolve, reject) => {
+        await plus.device.getInfo({
+          success: (e) => {
+            console.log("getDeviceInfo success: " + JSON.stringify(e));
+            this.IMEI = e.imei;
+            this.clientType = e.model;
+            let aaa = uni.getSystemInfoSync();
+            console.log(aaa);
+            resolve();
+          },
+          fail(e) {
+            console.log("getDeviceInfo failed: " + JSON.stringify(e));
+            reject();
+          },
+        });
+      }).then(() => {
+        this.aaa();
+      });
+    },
+    weixin() {
+      new Promise(async (resolve, reject) => {
+        await uni.login({
+          success: (res) => {
+            //code值(5分钟失效)
+            console.info(res.code);
+            //小程序secret
+            let secret = "1a5567978saf65c43s8s2397er1332ce";
+            //wx接口路径
+            let url =
+              "https://api.weixin.qq.com/sns/jscode2session?appid=" +
+              config.appId +
+              "&secret=" +
+              config.appSecret +
+              "&js_code=" +
+              res.code +
+              "&grant_type=authorization_code";
+            uni.request({
+              url: url, // 请求路径
+              method: "GET", //请求方式
+              success: (result) => {
+                //响应成功
+                //这里就获取到了openid了
+                console.info(result.data.openid);
+                let arr = result.data.openid.split("");
+                let str = "";
+                for (let i = 0; i < 17; i++) {
+                  str += arr[i];
+                }
+                this.IMEI = str;
+                this.clientType = "WeChat applet";
+                resolve();
+              },
+              fail: (err) => {
+                console.log(err);
+                reject();
+              }, //失败
+            });
+          },
+        });
+      }).then(() => {
+        this.aaa();
       });
     },
     bindLogin() {
@@ -369,13 +409,6 @@ export default {
         uni.navigateBack();
       }
     },
-  },
-  onReady() {
-    this.initPosition();
-    this.initProvider();
-    // #ifdef MP-WEIXIN
-    this.isDevtools = uni.getSystemInfoSync().platform === "devtools";
-    // #endif
   },
 };
 </script>

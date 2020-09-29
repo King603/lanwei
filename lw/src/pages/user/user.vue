@@ -1,10 +1,16 @@
 <template>
   <view class>
     <view class="center">
-      <view class="logo" @click="bindLogin" :hover-class="!hasLogin ? 'logo-hover' : ''">
+      <view
+        class="logo"
+        @click="bindLogin"
+        :hover-class="!hasLogin ? 'logo-hover' : ''"
+      >
         <image class="logo-img" :src="avatarUrl" />
         <view class="logo-title">
-          <text class="uer-name">Hi，{{hasLogin ? userName : '您未登录'}}</text>
+          <text class="uer-name"
+            >Hi，{{ hasLogin ? userName : "您未登录" }}</text
+          >
           <text class="go-login navigat-arrow" v-if="!hasLogin">&#xe65e;</text>
         </view>
       </view>
@@ -15,7 +21,11 @@
           <text class="navigat-arrow">&#xe65e;</text>
         </view>
         <!-- #ifdef APP-PLUS -->
-        <view v-if="hasLogin" class="center-list-item border-bottom" @click="toInvite">
+        <view
+          v-if="hasLogin"
+          class="center-list-item border-bottom"
+          @click="toInvite"
+        >
           <text class="list-icon">&#xe65f;</text>
           <text class="list-text">邀请好友</text>
           <text class="navigat-arrow">&#xe65e;</text>
@@ -47,7 +57,14 @@
         </view>
       </view>
       <view class="btn-row">
-        <button v-if="hasLogin" class="primary" type="primary" @click="bindLogout">退出登录</button>
+        <button
+          v-if="hasLogin"
+          class="primary"
+          type="primary"
+          @click="bindLogout"
+        >
+          退出登录
+        </button>
       </view>
     </view>
   </view>
@@ -77,8 +94,7 @@ export default {
       }
     },
     bindLogout() {
-      const loginType = uni.getStorageSync("login_type");
-      if (loginType === "local") {
+      if (this.hasLogin) {
         this.logout();
         if (this.forcedLogin) {
           uni.reLaunch({

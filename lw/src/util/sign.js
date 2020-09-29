@@ -1,9 +1,9 @@
 /**
  * 生成sign规则
  * @param {string} IMEI 			国际移动设备识别码
- * @param {string} deviceType 设备类型
+ * @param {string} clientType 设备类型
  */
-export default function (IMEI, deviceType) {
+export function getSign(IMEI, clientType) {
 	let now = new Date();
 	let year = now.getFullYear();
 	/**
@@ -18,12 +18,25 @@ export default function (IMEI, deviceType) {
 	let hours = toString(now.getHours());
 	let minutes = toString(now.getMinutes());
 	let seconds = toString(now.getSeconds());
-	return {
-		/**流水号 */
-		serial: `${IMEI}${deviceType}${(parseInt(Math.random() * 10000)).toString().padStart(4, "0")}`,
-		/**生成日期 */
+	let serial = {
+		imei: IMEI,
+		clientType: clientType,
+		random: parseInt(Math.random() * 10000).toString().padStart(4, "0"),
 		date: `${year}-${month}-${date}`,
-		/**生成时间 */
-		time: `${hours}:${minutes}:${seconds}`,
+		time: `${hours}:${minutes}:${seconds}`
 	}
+
+	let hash = ((str) => {
+		let hash = 0;
+		if (str.length == 0) return hash.toString();
+		for (let i = 0; i < str.length; i++) {
+			hash = ((hash << 5) - hash) + str.charCodeAt(i);
+			hash = hash & hash; // Convert to 32bit integer
+		}
+		return hash.toString();
+	})(JSON.stringify(serial));
+	return { 
+		...serial, 
+		hash 
+	};
 }

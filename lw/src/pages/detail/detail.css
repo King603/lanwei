@@ -1,8 +1,30 @@
 @font-face {
-	font-family: texticons;
-	font-weight: normal;
+	font-family: "iconfont";
+	src: url('~@/static/detail/iconfont.ttf') format('truetype');
+}
+
+.iconfont {
+	font-family: "iconfont" !important;
+	font-size: 16px;
 	font-style: normal;
-	src: url("https://at.alicdn.com/t/font_984210_5cs13ndgqsn.ttf") format("truetype");
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-wuliu:before {
+	content: "\e60a";
+}
+
+.icon-shengchan-:before {
+	content: "\e609";
+}
+
+.icon-lingshou:before {
+	content: "\e749";
+}
+
+.icon-cangchu:before {
+	content: "\e61f";
 }
 
 .bg {
@@ -21,22 +43,19 @@
 }
 
 .introduce {
-	padding-left: 5px;
 	font-size: 12px;
 	color: #8f8f94;
+	padding: 10upx 0;
+	margin-left: 25upx;
+}
+
+.title {
+	color: #333 !important;
+	font-weight: bold;
 }
 
 .introduce>p+p {
 	margin-top: 25upx;
-}
-
-.navigat-arrow {
-	height: 90rpx;
-	width: 40rpx;
-	line-height: 90rpx;
-	color: #555;
-	text-align: right;
-	font-family: texticons;
 }
 
 .list {
@@ -47,8 +66,54 @@
 	color: #8f8f94;
 	border-top: 5upx solid #ccc;
 	border-bottom: 5upx solid #ccc;
+	display: flex;
+	padding: 12upx 0;
 }
 
-.one p+p {
-	margin-top: 25upx;
+.list>.one>view {
+	box-sizing: border-box;
+}
+
+.nodeName {
+	width: 20%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: large;
+	font-weight: bold;
+	color: #0faeff;
+}
+
+.address {
+	width: 50%;
+	color: #555;
+	border-left: 0.5px dashed springgreen;
+}
+
+.address>ul {
+	margin-left: 30upx;
+}
+
+.address text {
+	line-height: 65upx;
+}
+
+.state {
+	width: 15%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: large;
+	font-weight: bold;
+	color: slateblue;
+}
+
+.right {
+	width: 15%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: large;
+	font-weight: bold;
+	color: slategray;
 }
