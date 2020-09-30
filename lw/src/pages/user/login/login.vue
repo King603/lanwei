@@ -188,8 +188,8 @@ export default {
         let { hash, imei, clientType, random, date, time } = getSign(
           this.IMEI,
           this.clientType
-				);
-				
+        );
+
         const params = {
           account: this.account,
           password: this.password,
@@ -271,7 +271,7 @@ export default {
           success: (e) => {
             console.log("getDeviceInfo success: " + JSON.stringify(e));
             this.IMEI = e.imei;
-            this.clientType = e.model + "APP-PLUS";
+            this.clientType = e.model == "Android" ? 1 : 2;
             resolve();
           },
           fail(e) {

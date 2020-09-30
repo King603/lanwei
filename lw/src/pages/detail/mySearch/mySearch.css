@@ -5,7 +5,7 @@
 	src: url('~@/static/fonts/uni.ttf') format('truetype');
 }
 
-.bg{
+.bg {
 	width: 100%;
 	background-color: #f0f0f0;
 }
@@ -39,4 +39,10 @@
 
 .main {
 	display: flex;
+}
+
+.info {
+	border-bottom: 0.5rpx solid rgba(0, 0, 0, 1);
+	display: flex;
+	line-height: 35px;
 }

@@ -1,18 +1,25 @@
 <template>
   <view class="content">
-    <view class="hello">
-      <view v-show="!hasLogin" class="title">您好 游客。</view>
-      <view v-show="hasLogin" class="title">您好 {{userName}}，您已成功登录。</view>
+    <view class="title">
+      <view>
+        <view class="button" @click="toScan">
+          <view class="iconfont icon-saoyisao"></view>
+          <view>扫一扫</view>
+        </view>
+        <view class="button" @click="toNFC">
+          <view class="iconfont icon-nfc"></view>
+          <view>NFC</view>
+        </view>
+      </view>
       <!-- 搜索框 -->
       <view class="ul m-icon m-icon-search" @click="Search">
         <m-input type="text" placeholder="请输入搜索内容"></m-input>
       </view>
-      <!-- 轮播图 -->
-      <view class="slideshow">
-        <m-slideshow :list="ImagesSrcArr"></m-slideshow>
-      </view>
-
     </view>
+    <!-- 轮播图 -->
+    <!-- <view class="slideshow">
+      <m-slideshow :list="ImagesSrcArr"></m-slideshow>
+    </view> -->
   </view>
 </template>
 
@@ -29,6 +36,10 @@ export default {
        * @type {string[]}
        */
       ImagesSrcArr: [],
+      buttons: [
+        { className: "icon-saoyisao", text: "扫一扫" },
+        { className: "icon-nfc", text: "NFC" },
+      ],
     };
   },
   components: {
@@ -113,11 +124,21 @@ export default {
       uni.navigateTo({
         url: "../detail/mySearch/mySearch",
       });
-    },
+		},
+		/**跳转到扫一扫界面 */
+    toScan() {
+      uni.switchTab({
+        url: "../detail/detail",
+        fail(e) {
+          console.log(e);
+        },
+      });
+		},
+    toNFC() {},
   },
 };
 </script>
 
-<style>
+<style scoped>
 @import "./main.css";
 </style>
