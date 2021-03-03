@@ -2,6 +2,7 @@ import _app from "./app.js";
 import QRCodeAlg from "./QRCodeAlg.js";
 const ShreUserPosterBackgroundKey = "ShrePosterBackground_"; // 背景图片缓存名称前缀
 
+
 export function getSharePoster(obj) {
 	return new Promise(async (resolve, reject) => {
 		try {
@@ -20,26 +21,7 @@ export function getSharePoster(obj) {
 	});
 }
 
-function returnPromise(obj) {
-	let {
-		type,
-		background,
-		posterCanvasId,
-		backgroundImage,
-		reserve,
-		textArray,
-		drawArray,
-		qrCodeArray,
-		imagesArray,
-		setCanvasWH,
-		setCanvasToTempFilePath,
-		setDraw,
-		bgScale,
-		Context,
-		_this,
-		delayTimeScale,
-		drawDelayTime
-	} = obj;
+function returnPromise({ type, background, posterCanvasId, backgroundImage, reserve, textArray, drawArray, qrCodeArray, imagesArray, setCanvasWH, setCanvasToTempFilePath, setDraw, bgScale = .75, Context, _this, delayTimeScale, drawDelayTime }) {
 	return new Promise(async (resolve, reject) => {
 		try {
 			_app.showLoading("正在准备海报数据");
@@ -57,16 +39,11 @@ function returnPromise(obj) {
 				});
 			}
 			// 为了ios 缩放一些
-			bgScale = bgScale || .75;
-			bgObj.width = bgObj.width * bgScale;
-			bgObj.height = bgObj.height * bgScale;
+			bgObj.width *= bgScale;
+			bgObj.height *= bgScale;
 
 			console.log("获取背景图信息对象成功:" + JSON.stringify(bgObj));
-			const params = {
-				bgObj,
-				type,
-				bgScale
-			};
+			const params = { bgObj, type, bgScale };
 			if (setCanvasWH && typeof (setCanvasWH) == "function") setCanvasWH(params);
 			if (imagesArray) {
 				if (typeof (imagesArray) == "function")
@@ -151,24 +128,7 @@ function returnPromise(obj) {
 	});
 }
 
-function drawShareImage(obj) { //绘制海报方法
-	let {
-		Context,
-		type,
-		posterCanvasId,
-		reserve,
-		bgObj,
-		drawArray,
-		textArray,
-		qrCodeArray,
-		imagesArray,
-		setCanvasToTempFilePath,
-		setDraw,
-		bgScale,
-		_this,
-		delayTimeScale,
-		drawDelayTime
-	} = obj;
+function drawShareImage({ Context, type, posterCanvasId, reserve, bgObj, drawArray, textArray, qrCodeArray, imagesArray, setCanvasToTempFilePath, setDraw, bgScale, _this, delayTimeScale, drawDelayTime }) { //绘制海报方法
 	const params = {
 		Context,
 		bgObj,
@@ -917,12 +877,11 @@ function getShreUserPosterBackground(objs) { //检查背景图是否存在于本
 	return new Promise(async (resolve, reject) => {
 		try {
 			_app.showLoading("正在获取海报背景图");
-			let pbg;
 			// #ifndef H5
-			pbg = getPosterStorage(type);
+			let pbg = getPosterStorage(type);
 			// #endif
 			// #ifdef H5
-			pbg = false;
+			let pbg = false;
 			// #endif
 			console.log("获取的缓存:" + JSON.stringify(pbg));
 			if (pbg && pbg.path && pbg.name) {

@@ -1,18 +1,18 @@
 <template>
   <view class="uni-popup-share">
     <view class="uni-share-title">
-      <text class="uni-share-title-text">{{title}}</text>
+      <text class="uni-share-title-text">{{ title }}</text>
     </view>
     <view class="uni-share-content">
       <view class="uni-share-content-box">
         <view
           class="uni-share-content-item"
-          v-for="(item,index) in bottomData"
+          v-for="(item, index) in bottomData"
           :key="index"
-          @click.stop="select(item,index)"
+          @click.stop="select(item, index)"
         >
           <image class="uni-share-image" :src="item.icon" mode="aspectFill" />
-          <text class="uni-share-text">{{item.text}}</text>
+          <text class="uni-share-text">{{ item.text }}</text>
         </view>
       </view>
     </view>
@@ -112,9 +112,9 @@ export default {
       },
       fail: (e) => {
         console.log("获取分享通道失败", e);
-        uni.showModal({
-          content: "获取分享通道失败",
-          showCancel: false,
+        uni.showToast({
+          title: "获取分享通道失败",
+          icon: "none",
         });
       },
     });

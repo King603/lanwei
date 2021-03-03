@@ -2,7 +2,6 @@
  * 生成sign规则
  * @param {string} IMEI 			国际移动设备识别码
  * @param {number} clientType 设备类型
-
  */
 export function getSign(IMEI, clientType) {
 	let now = new Date();
@@ -32,16 +31,16 @@ export function getSign(IMEI, clientType) {
 		/**时间 */
 		time: `${hours}:${minutes}:${seconds}`
 	}
-
-	let hash = ((sign) => {
-		let str = sign.imei + sign.clientType + sign.date + sign.time + sign.random;
+	let serial = (({ imei, clientType, random, date, time }) => {
+		let str = imei + clientType + date + time + random;
 		let hash = 0;
 		if (str.length !== 0)
 			for (let i = 0; i < str.length; i++) {
 				hash = (hash << 5) - hash + str.charCodeAt(i);
 				hash &= hash; // Convert to 32bit integer
 			}
-		return hash;
+		return hash + "";
 	})(sign);
-	return { ...sign, hash };
+	console.log({ ...sign, serial });
+	return { ...sign, serial };
 }

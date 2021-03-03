@@ -1,0 +1,302 @@
+{
+	"name": "mob-sharesdk",
+	"id": "mob-sharesdk",
+	"version": "1.1.3",
+	"description": "为开发者提供40+主流平台的分享与授权等社会化功能，效果稳定，完整清晰统计分享数据",
+	"_dp_type": "nativeplugin",
+	"_dp_nativeplugin": {
+		"android": {
+			"plugins": [
+				{
+					"type": "module",
+					"name": "mob-sharesdk",
+					"class": "com.mob.uniplugin_sharesdk.MobShareSDKModule"
+				}
+			],
+			"hooksClass": "com.mob.uniplugin_sharesdk.ShareSDK_AppProxy",
+			"integrateType": "aar",
+			"minSdkVersion": "16",
+			"parameters": {
+				"MobShareSDK的AppKey": {
+					"des": "MOBAppKey",
+					"key": "MOBAppKey"
+				},
+				"MobShareSDKAppSecret": {
+					"des": "MOBAppSecret",
+					"key": "MOBAppSecret"
+				},
+				"新浪微博的AppKey": {
+					"des": "SinaWei_AppKey",
+					"key": "SinaWei_AppKey"
+				},
+				"新浪微博的AppSecret": {
+					"des": "SinaWei_AppSecret",
+					"key": "SinaWei_AppSecret"
+				},
+				"新浪微博的CallbackUri": {
+					"des": "SinaWei_CallbackUri",
+					"key": "SinaWei_CallbackUri"
+				},
+				"新浪微博的shareByAppClient": {
+					"des": "SinaWei_shareByAppClient",
+					"key": "SinaWei_shareByAppClient"
+				},
+				"QQ的AppKey": {
+					"des": "QQ_AppKey",
+					"key": "QQ_AppKey"
+				},
+				"QQ的AppSecret": {
+					"des": "QQ_AppSecret",
+					"key": "QQ_AppSecret"
+				},
+				"QQ的shareByAppClient": {
+					"des": "QQ_shareByAppClient",
+					"key": "QQ_shareByAppClient"
+				},
+				"微信的AppKey": {
+					"des": "Wechat_AppKey",
+					"key": "Wechat_AppKey"
+				},
+				"微信的AppSecret": {
+					"des": "Wechat_AppSecret",
+					"key": "Wechat_AppSecret"
+				},
+				"Facebook的AppKey": {
+					"des": "Facebook_AppKey",
+					"key": "Facebook_AppKey"
+				},
+				"Facebook_AppSecret": {
+					"des": "Facebook_AppSecret",
+					"key": "Facebook_AppSecret"
+				},
+				"Facebook的CallbackUri": {
+					"des": "Facebook_CallbackUri",
+					"key": "Facebook_CallbackUri"
+				},
+				"Facebook的shareByAppClient": {
+					"des": "Facebook_shareByAppClient",
+					"key": "Facebook_shareByAppClient"
+				},
+				"推特的AppKey": {
+					"des": "Twitter_AppKey",
+					"key": "Twitter_AppKey"
+				},
+				"推特的AppSecret": {
+					"des": "Twitter_AppSecret",
+					"key": "Twitter_AppSecret"
+				},
+				"推特的CallbackUri": {
+					"des": "Twitter_CallbackUri",
+					"key": "Twitter_CallbackUri"
+				},
+				"推特的shareByAppClient": {
+					"des": "Twitter_shareByAppClient",
+					"key": "Twitter_shareByAppClient"
+				}
+			}
+		},
+		"ios": {
+			"plugins": [
+				{
+					"type": "module",
+					"name": "mob-sharesdk",
+					"class": "ShareSDKModule"
+				},
+				{
+					"type": "module",
+					"name": "mob_sharesdk",
+					"class": "ShareSDKModule"
+				},
+				{
+					"type": "module",
+					"name": "mob-sharelink",
+					"class": "ShareSDKRestoreSceneModule"
+				}
+			],
+			"integrateType": "library",
+			"hooksClass": "ShareSDKProxy",
+			"embedFrameworks": [
+				"MessageUI.framework",
+				"libc++.tbd",
+				"CoreFoundation.framework",
+				"libsqlite3.tbd",
+				"SafariServices.framework",
+				"libz.tbd",
+				"libstdc++.tbd",
+				"Accelerate",
+				"AuthenticationServices",
+				"SafariServices",
+				"Accounts",
+				"CoreLocation",
+				"Social",
+				"WebKit",
+				"Security",
+				"QuartzCore",
+				"AudioToolbox",
+				"CoreServices",
+				"stdc++",
+				"c++",
+				"z"
+			],
+			"plists": {
+				"LSApplicationQueriesSchemes": [
+					"fbapi20160328",
+					"lineauth2",
+					"line",
+					"fbapi20160328",
+					"lineauth",
+					"fbapi20150629",
+					"weixinULAPI",
+					"sinaweibohd",
+					"sinaweibo",
+					"weibosdk2.5",
+					"weibosdk",
+					"weibo",
+					"sinaweibosso",
+					"weixin",
+					"tim",
+					"timOpensdkSSoLogin",
+					"timapi",
+					"timapiV1",
+					"timapiwallet",
+					"timgamebindinggroup",
+					"timgamebindinggroup",
+					"timopensdkapiV4",
+					"timopensdkdataline",
+					"timopensdkfriend",
+					"timopensdkgrouptribeshare",
+					"timwpa",
+					"mqq",
+					"mqqOpensdkSSoLogin",
+					"mqqapi",
+					"mqqopensdkapiV2",
+					"mqqopensdkapiV3",
+					"mqqopensdkapiV4",
+					"mqqopensdkminiapp",
+					"mqqopensdkminiapp",
+					"mqqwpa",
+					"mqzone",
+					"mqzoneopensdk",
+					"mqzoneopensdkapi",
+					"mqzoneopensdkapi19",
+					"mqzoneopensdkapiV2",
+					"wtloginmqq2",
+					"wtlogintim",
+					"wtlogintimV1",
+					"fbauth",
+					"fb-messenger-platform-20150714",
+					"fb-messenger-api20140430",
+					"fb-messenger-share-api",
+					"fb-messenger",
+					"fbauth2",
+					"fbapi",
+					"fbapi20130214",
+					"twitterauth",
+					"instagram"
+				]
+			},
+			"resources": [
+				"WeiboSDK.bundle",
+				"ShareSDK.bundle",
+				"LineSDKResource.bundle",
+				"FacebookSDKStrings.bundle",
+				"ShareSDKUI.bundle"
+			],
+			"deploymentTarget": "8.0",
+			"parameters": {
+				"MobShareSDK的AppKey": {
+					"des": "MOBAppKey",
+					"key": "MOBAppKey"
+				},
+				"MobShareSDK的AppSecret": {
+					"des": "MOBAppSecret",
+					"key": "MOBAppSecret"
+				},
+				"新浪微博的AppKey": {
+					"des": "SinaWei_AppKey",
+					"key": "mobinfo:sina:appkey"
+				},
+				"新浪微博的AppSecret": {
+					"des": "SinaWei_AppSecret",
+					"key": "mobinfo:sina:appsecret"
+				},
+				"Line的ChannelId": {
+					"des": "Line_ChannelID",
+					"key": "LineSDKConfig:ChannelID"
+				},
+				"Line的UniversalLink": {
+					"des": "Line_UniversalLink",
+					"key": "LineSDKConfig:UniversalLink"
+				},
+				"新浪微博的RedirectUrl": {
+					"des": "SinaWei_RedirectUrl",
+					"key": "mobinfo:sina:redirecturl"
+				},
+				"QQ的AppKey": {
+					"des": "AppKey",
+					"key": "mobinfo:qq:appid"
+				},
+				"QQ的AppSecret": {
+					"des": "AppSecret",
+					"key": "mobinfo:qq:appkey"
+				},
+				"微信的AppKey": {
+					"des": "Wechat_AppKey",
+					"key": "mobinfo:wechat:appkey"
+				},
+				"微信的AppSecret": {
+					"des": "Wechat_AppSecret",
+					"key": "mobinfo:wechat:appsecret"
+				},
+				"微信的universalLink": {
+					"des": "Wechat_UniversalLink",
+					"key": "mobinfo:wechat:universalLink"
+				},
+				"Facebook的AppKey": {
+					"des": "Facebook_AppKey",
+					"key": "FacebookAppID"
+				},
+				"Facebook_AppSecret": {
+					"des": "Facebook_AppSecret",
+					"key": "mobinfo:facebook:appsecret"
+				},
+				"Facebook的RedirectUrl": {
+					"des": "Facebook_RedirectUrl",
+					"key": "mobinfo:facebook:redirecturl"
+				},
+				"Facebook的DisplayName": {
+					"des": "Facebook_DisplayName",
+					"key": "mobinfo:facebook:displayname"
+				},
+				"FacebookMessage的AppKey": {
+					"des": "FacebookMessage_AppKey",
+					"key": "mobinfo:facebookmessage:appkey"
+				},
+				"推特的AppKey": {
+					"des": "Twitter_AppKey",
+					"key": "mobinfo:twitter:appkey"
+				},
+				"推特的AppSecret": {
+					"des": "Twitter_AppSecret",
+					"key": "mobinfo:twitter:appsecret"
+				},
+				"推特的RedirectUri": {
+					"des": "Twitter_RedirectUri",
+					"key": "mobinfo:twitter:redirecturl"
+				},
+				"google的clientID": {
+					"des": "google_clientId",
+					"key": "mobinfo:google:clientId"
+				},
+				"google的clientSecret": {
+					"des": "google_clientSecret",
+					"key": "mobinfo:google:clientSecret"
+				},
+				"google的redirectUrl": {
+					"des": "google_redirectUrl",
+					"key": "mobinfo:google:redirectUrl"
+				}
+			}
+		}
+	}
+}

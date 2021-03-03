@@ -1,0 +1,27 @@
+{
+  "name": "uniplugin_module",
+  "id": "uniplugin_module",
+  "version": "0.1.1",
+  "description": "test",
+  "_dp_type":"nativeplugin",
+  "_dp_nativeplugin":{
+    "android": {
+      "plugins": [
+        {
+          "type": "module",
+          "name": "uniplugin_module",
+          "class": "TestModule"
+        }
+      ],
+
+      "integrateType": "aar",
+      "compileOptions": {  //可选，Java编译参数配置
+        "sourceCompatibility": "1.8",
+        "targetCompatibility": "1.8"
+      },
+
+      "minSdkVersion": "15",
+      "useAndroidX": false   //可选，是否兼容使用AndroidX
+    }
+  }
+}

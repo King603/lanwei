@@ -1,0 +1,76 @@
+@font-face {
+	font-family: "iconfont";
+	src: url('~@/static/fonts/iconfont.ttf') format('truetype');
+}
+
+.iconfont {
+	font-family: "iconfont" !important;
+	font-size: 16px;
+	font-style: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-shangpin:before {
+	content: "\e60a";
+}
+
+.icon-cangchu:before {
+	content: "\e606";
+}
+
+.icon-saoma:before {
+	content: "\e660";
+}
+
+.icon-guige:before {
+	content: "\e745";
+}
+
+.icon-sousuo:before {
+	content: "\e605";
+}
+
+.icon-wuliu:before {
+	content: "\e65d";
+}
+
+.icon-nfc:before {
+	content: "\e687";
+}
+
+.icon-shengchan-:before {
+	content: "\e67d";
+}
+
+.icon-zhaopianpaizhao:before {
+	content: "\e60b";
+}
+
+.icon-zhifuhuodong:before {
+	content: "\e502";
+}
+
+.icon-lingshou:before {
+	content: "\e749";
+}
+
+.icon-2:before {
+	content: "\e501";
+}
+
+.icon-chuchang:before {
+	content: "\e618";
+}
+
+.icon-chenggong:before {
+	content: "\e63a";
+}
+
+.icon-tupian:before {
+	content: "\e6ce";
+}
+
+.icon-fenxiang:before {
+	content: "\e6cf";
+}

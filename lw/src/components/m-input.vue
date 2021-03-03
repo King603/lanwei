@@ -10,6 +10,7 @@
       :password="type === 'password' && !showPassword"
       @focus="onFocus"
       @blur="onBlur"
+      :maxlength="maxlength"
     />
     <!-- 优先显示密码可见按钮 -->
     <view v-if="clearable && !displayable && value.length" class="m-input-icon">
@@ -33,38 +34,30 @@ export default {
     mIcon,
   },
   props: {
-    /**
-     * 输入类型
-     */
+    /** 输入类型 */
     type: String,
-    /**
-     * 值
-     */
+    /** 值 */
     value: String,
-    /**
-     * 占位符
-     */
+    /** 占位符 */
     placeholder: String,
-    /**
-     * 是否显示清除按钮
-     */
+    /** 是否显示清除按钮 */
     clearable: {
       type: [Boolean, String],
       default: false,
     },
-    /**
-     * 是否显示密码可见按钮
-     */
+    /** 是否显示密码可见按钮 */
     displayable: {
       type: [Boolean, String],
       default: false,
     },
-    /**
-     * 自动获取焦点
-     */
+    /** 自动获取焦点 */
     focus: {
       type: [Boolean, String],
       default: false,
+    },
+    maxlength: {
+      type: Number,
+      default: 18,
     },
   },
   model: {
@@ -73,13 +66,9 @@ export default {
   },
   data() {
     return {
-      /**
-       * 显示密码明文
-       */
+      /** 显示密码明文 */
       showPassword: false,
-      /**
-       * 是否获取焦点
-       */
+      /** 是否获取焦点 */
       isFocus: false,
     };
   },
@@ -102,8 +91,8 @@ export default {
     onBlur() {
       this.$nextTick(() => (this.isFocus = false));
     },
+    /**@param {MouseEvent} e */
     onInput(e) {
-      console.log(e.detail);
       this.$emit("input", e.detail.value);
     },
     onSearch() {
@@ -120,21 +109,21 @@ export default {
   align-items: center;
   /* width: 100%; */
   flex: 1;
-  padding: 0 10px;
+  padding: 0 20upx;
 }
 
 .m-input-input {
   flex: 1;
   width: 100%;
-  height: 20px;
-  line-height: 20px;
+  height: 40upx;
+  line-height: 40upx;
   background-color: rgba(0, 0, 0, 0);
 }
 
 .m-input-icon {
-  /* width: 20px; */
-  font-size: 20px;
-  line-height: 20px;
+  /* width: 40upx; */
+  font-size: 40upx;
+  line-height: 40upx;
   color: #666666;
 }
 </style>

@@ -5,12 +5,8 @@
 	src: url("../../static/fonts/font_984210_5cs13ndgqsn.ttf") format("truetype");
 }
 
-page, view {
+page, .bg view {
 	display: flex;
-}
-
-page {
-	background-color: #f8f8f8;
 }
 
 button {
@@ -26,7 +22,7 @@ button {
 	height: 240rpx;
 	padding: 20rpx;
 	box-sizing: border-box;
-	background-color: #0faeff;
+	background-color: #11bf78;
 	flex-direction: row;
 	align-items: center;
 }
@@ -50,7 +46,7 @@ button {
 	margin-left: 20rpx;
 }
 
-.uer-name {
+.user-name {
 	height: 60rpx;
 	line-height: 60rpx;
 	color: #ffffff;
@@ -93,7 +89,7 @@ button {
 	width: 40rpx;
 	height: 90rpx;
 	line-height: 90rpx;
-	color: #0faeff;
+	color: #11bf78;
 	text-align: center;
 	font-family: texticons;
 	margin-right: 20rpx;
@@ -114,4 +110,9 @@ button {
 	color: #555;
 	text-align: right;
 	font-family: texticons;
+}
+
+.bg {
+	width: 100%;
+	background-color: #f0f0f0;
 }

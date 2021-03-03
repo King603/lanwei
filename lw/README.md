@@ -43,23 +43,25 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 #ifdef H5 || MP-WEIXIN
 需条件编译的代码
 #endif
+```
 在 H5 平台或微信小程序平台存在的代码（这里只有||，不可能出现&&，因为没有交集）
 %PLATFORM% 可取值如下：
 
-值											平台
-APP-PLUS								App
-APP-PLUS-NVUE						App nvue
-H5											H5
-MP-WEIXIN								微信小程序
-MP-ALIPAY								支付宝小程序
-MP-BAIDU								百度小程序
-MP-TOUTIAO							字节跳动小程序
-MP-QQ										QQ小程序
-MP-360									360小程序
-MP											微信小程序/支付宝小程序/百度小程序/字节跳动小程序/QQ小程序/360小程序
-quickapp-webview				快应用通用(包含联盟、华为)
-quickapp-webview-union	快应用联盟
-quickapp-webview-huawei	快应用华为
+|值|平台|
+|---|:---|
+|APP-PLUS|App|
+|APP-PLUS-NVUEApp nvue|
+|H5|H5|
+|MP-WEIXIN|微信小程序|
+|MP-ALIPAY|支付宝小程序|
+|MP-BAIDU|百度小程序|
+|MP-TOUTIAO|字节跳动小程序|
+|MP-QQ|QQ小程序|
+|MP-360|360小程序|
+|MP|微信小程序/支付宝小程序/百度小程序/字节跳动小程序/QQ小程序/360小程序|
+|quickapp-webview|快应用通用(包含联盟、华为)|
+|quickapp-webview-union|快应用联盟|
+|quickapp-webview-huawei|快应用华为|
 
 ### 支持的文件
 

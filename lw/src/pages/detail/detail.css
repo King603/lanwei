@@ -1,30 +1,11 @@
-@font-face {
-	font-family: "iconfont";
-	src: url('~@/static/detail/iconfont.ttf') format('truetype');
+@import url(~@/static/fonts/iconfont.css);
+ul {
+	margin: 0;
+	padding: 0;
 }
 
-.iconfont {
-	font-family: "iconfont" !important;
-	font-size: 16px;
-	font-style: normal;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-}
-
-.icon-wuliu:before {
-	content: "\e60a";
-}
-
-.icon-shengchan-:before {
-	content: "\e609";
-}
-
-.icon-lingshou:before {
-	content: "\e749";
-}
-
-.icon-cangchu:before {
-	content: "\e61f";
+ul>li {
+	list-style-type: none;
 }
 
 .bg {
@@ -35,27 +16,35 @@
 	display: flex;
 }
 
+.last {
+	padding-top: 10upx;
+}
+
 .commodity {
 	width: 33.333%;
-	background-position: center center;
-	background-size: contain;
-	background-repeat: no-repeat;
+}
+
+.commodity>img {
+	width: 100%;
+	height: 100%;
 }
 
 .introduce {
-	font-size: 12px;
+	font-size: 30upx;
 	color: #8f8f94;
-	padding: 10upx 0;
+	padding-top: 15upx;
 	margin-left: 25upx;
-}
-
-.title {
-	color: #333 !important;
 	font-weight: bold;
+	position: relative;
 }
 
 .introduce>p+p {
 	margin-top: 25upx;
+	color: #a6a6a6;
+}
+
+.title {
+	color: #6f6f6f !important;
 }
 
 .list {
@@ -75,37 +64,33 @@
 }
 
 .nodeName {
-	width: 20%;
+	width: 25%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: large;
+	font-size: 44upx;
 	font-weight: bold;
-	color: #0faeff;
+	color: #11bf78;
 }
 
 .address {
-	width: 50%;
+	width: 60%;
 	color: #555;
-	border-left: 0.5px dashed springgreen;
+	border-left: 0.5px dashed #afafaf;
 }
 
-.address>ul {
+.address>p {
 	margin-left: 30upx;
-}
-
-.address text {
-	line-height: 65upx;
+	line-height: 150%;
 }
 
 .state {
-	width: 15%;
-	display: flex;
 	align-items: center;
 	justify-content: center;
 	font-size: large;
 	font-weight: bold;
-	color: slateblue;
+	color: #fbfbfb;
+	background-color: #ea7f7f;
 }
 
 .right {
@@ -116,4 +101,42 @@
 	font-size: large;
 	font-weight: bold;
 	color: slategray;
+}
+
+.img {
+	width: 100%;
+	height: 100%;
+}
+
+.showmore {
+	position: absolute;
+	right: 0upx;
+	top: 50upx;
+	color: royalblue;
+}
+
+.node {
+	font-size: 30upx;
+}
+
+m-scan {
+	position: fixed;
+	width: 100%;
+	top: 0;
+	z-index: 999999;
+}
+
+.isScan {
+	overflow: auto;
+	position: absolute;
+	top: 75upx;
+	width: 100%;
+}
+
+.buy {
+	position: fixed;
+	top: 100upx;
+	right: 30upx;
+	z-index: 1000;
+	color: #0ff;
 }

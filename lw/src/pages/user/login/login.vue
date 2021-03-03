@@ -1,87 +1,77 @@
 <template>
-  <view class="content">
-    <view class="login-type">
-      <view
-        v-for="(item, index) in loginTypeList"
-        :key="index"
-        @click="loginType = index"
-        :class="{ act: loginType === index }"
-        class="login-type-btn"
-        >{{ item }}</view
-      >
-    </view>
-    <view class="input-group" v-if="loginType === 0">
-      <view class="input-row border">
-        <text class="title">手机：</text>
-        <m-input
-          class="m-input"
-          type="text"
-          clearable
-          focus
-          v-model="mobile"
-          placeholder="请输入手机号码"
-        ></m-input>
+  <view style="width: 100%">
+    <titleModule :titleText="titleText" :showNum="true" />
+    <view class="content">
+      <view class="login-type">
+        <view
+          v-for="(item, index) in loginTypeList"
+          :key="index"
+          @click="loginType = index"
+          :class="{ act: loginType === index }"
+          class="login-type-btn"
+          >{{ item }}</view
+        >
       </view>
-      <view class="input-row">
-        <text class="title">验证码：</text>
-        <m-input
-          type="text"
-          v-model="code"
-          placeholder="请输入验证码"
-        ></m-input>
-        <view class="send-code-btn" @click="sendSmsCode">{{
-          codeDuration ? codeDuration + "s" : "发送验证码"
-        }}</view>
+      <view class="input-group" v-if="loginType === 0">
+        <view class="input-row border">
+          <text class="title">手机：</text>
+          <m-input
+            class="m-input"
+            type="number"
+            clearable
+            focus
+            v-model="mobile"
+            placeholder="请输入手机号码"
+          ></m-input>
+        </view>
+        <view class="input-row">
+          <text class="title">验证码：</text>
+          <m-input
+            type="number"
+            v-model="code"
+            placeholder="请输入验证码"
+          ></m-input>
+          <view class="send-code-btn" v-if="codeDuration > 0"
+            >{{ codeDuration }}s后重试</view
+          >
+          <view class="send-code-btn" v-else @click="sendSmsCode"
+            >发送验证码</view
+          >
+        </view>
       </view>
-    </view>
-    <view class="input-group" v-else>
-      <view class="input-row border">
-        <text class="title">账号：</text>
-        <m-input
-          class="m-input"
-          type="text"
-          clearable
-          focus
-          v-model="account"
-          placeholder="请输入账号"
-        ></m-input>
+      <view class="input-group" v-else>
+        <view class="input-row border">
+          <text class="title">账号：</text>
+          <m-input
+            class="m-input"
+            type="text"
+            clearable
+            focus
+            v-model="account"
+            placeholder="请输入账号"
+          ></m-input>
+        </view>
+        <view class="input-row border">
+          <text class="title">密码：</text>
+          <m-input
+            type="password"
+            displayable
+            v-model="password"
+            placeholder="请输入密码"
+          ></m-input>
+        </view>
+        <view class="input-row" @click="setLogin">
+          <view class="isOK" :class="isOK ? 'agree' : 'against'"></view>
+          <text class="">记住密码</text>
+        </view>
       </view>
-      <view class="input-row">
-        <text class="title">密码：</text>
-        <m-input
-          type="password"
-          displayable
-          v-model="password"
-          placeholder="请输入密码"
-        ></m-input>
+      <view class="btn-row">
+        <button type="primary" class="primary" @click="bindLogin">登录</button>
       </view>
-    </view>
-    <view class="btn-row">
-      <button type="primary" class="primary" @click="bindLogin">登录</button>
-    </view>
-    <view class="action-row">
-      <navigator url="../reg/reg">注册账号</navigator>
-      <text v-show="loginType == 1">|</text>
-      <navigator url="../pwd/pwd" v-show="loginType == 1">忘记密码</navigator>
-    </view>
-    <view
-      class="oauth-row"
-      v-if="hasProvider"
-      v-bind:style="{ top: positionTop + 'px' }"
-    >
-      <view
-        class="oauth-image"
-        v-for="provider in providerList"
-        :key="provider.value"
-      >
-        <image :src="provider.image" @click="oauth(provider.value)" />
-        <!-- #ifdef MP-WEIXIN -->
-        <button
-          v-if="!isDevtools"
-          open-type="getUserInfo"
-          @getuserinfo="getUserInfo"
-        ></button>
-        <!-- #endif -->
+      <view class="action-row">
+        <navigator url="../reg/reg">注册账号</navigator>
+        <text v-show="loginType == 1">|</text>
+        <navigator url="../pwd/pwd" v-show="loginType == 1">忘记密码</navigator>
       </view>
     </view>
   </view>
@@ -89,13 +79,21 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
-import mInput from "../../../components/m-input.vue";
-import config from "../../../util/config.js";
+import getNetworkType from "../../../api/getNetworkType";
+import net_off from "../../../api/net_off";
+import * as config from "../../../util/config.js";
 import { getSign } from "../../../util/sign";
+import mInput from "../../../components/m-input.vue";
+import sendMs from "../../../api/request/user/sendMs";
+import loginByPwd from "../../../api/request/user/loginByPwd";
+import loginBySms from "../../../api/request/user/loginBySms";
+import getWeChat_openID from "../../../api/request/getWeChat_openID";
+import titleModule from "../../../components/titleModule.vue";
 
 export default {
   components: {
-    mInput,
+		mInput,
+		titleModule,
   },
   data() {
     return {
@@ -109,8 +107,20 @@ export default {
       password: "",
       positionTop: 0,
       codeDuration: 0,
+      codeInterVal: 0,
       IMEI: "",
       clientType: 0,
+      /**@type {{
+  		  serial: string;
+  		  imei: string;
+  		  clientType: number;
+  		  random: string;
+  		  date: string;
+  		  time: string;
+			}} */
+      myliu: null,
+      isOK: false,
+      titleText: "登录界面",
     };
   },
   computed: mapState(["forcedLogin"]),
@@ -118,132 +128,19 @@ export default {
     ...mapMutations(["login"]),
     sendSmsCode() {
       if (this.codeDuration) {
-        uni.showModal({
-          content: `请在${this.codeDuration}秒后重试`,
-          showCancel: false,
+        uni.showToast({
+          title: `请在${this.codeDuration}秒后重试`,
+          icon: "none",
         });
       }
       if (!config.phoneRegex.test(this.mobile)) {
-        uni.showModal({
-          content: "手机号码填写错误",
-          showCancel: false,
-        });
-        return;
-      }
-      this.request({
-        data: {
-          phoneNum: this.mobile,
-        },
-        method: "POST",
-        success: (e) => {
-          if (e.data.code == 0) {
-            uni.showModal({
-              content: "验证码发送成功，请注意查收",
-              showCancel: false,
-            });
-            this.codeDuration = 60;
-            this.codeInterVal = setInterval(() => {
-              this.codeDuration--;
-              if (this.codeDuration === 0) {
-                if (this.codeInterVal) {
-                  clearInterval(this.codeInterVal);
-                  this.codeInterVal = null;
-                }
-              }
-            }, 1000);
-          } else {
-            uni.showModal({
-              content: "验证码发送失败：" + e.data.msg,
-              showCancel: false,
-            });
-          }
-        },
-        url: config.login(this.loginType),
-      });
-    },
-    /** 密码登录 */
-    loginByPwd() {
-      if (!config.accountRegex.test(this.account)) {
         uni.showToast({
+          title: "手机号码填写错误",
           icon: "none",
-          title: "账号最短为 3 个字符",
         });
         return;
       }
-      if (!config.passwordRegex.test(this.password)) {
-        uni.showToast({
-          icon: "none",
-          title: "密码长度为6-18位",
-        });
-        return;
-      }
-      (() => {
-        // #ifdef APP-PLUS
-        return this.app();
-        // #endif
-        // #ifdef MP-WEIXIN
-        return this.weixin();
-        // #endif
-      })().then(async () => {
-        let { hash, imei, clientType, random, date, time } = getSign(
-          this.IMEI,
-          this.clientType
-        );
-
-        const params = {
-          account: this.account,
-          password: this.password,
-          serial: hash,
-          imei: imei,
-          clientType: clientType,
-          random: random,
-          date: date,
-          time: time,
-        };
-        console.log(params);
-        await this.request({
-          data: params,
-          method: "POST",
-          success: (e) => this.success(e),
-          url: config.login(this.loginType),
-        });
-      });
-    },
-    /**
-     * @param {UniApp.RequestSuccessCallbackResult} e
-     */
-    success(e) {
-      console.log("login success", e);
-      if (e.data.code == 1) {
-        let userName = e.data.data[0].username || "新用户";
-        uni.setStorageSync("username", userName);
-        uni.setStorageSync("login_type", "online");
-        this.toMain(userName);
-      } else {
-        uni.showModal({
-          content: e.data.msg,
-          showCancel: false,
-        });
-        console.log("登录失败", e);
-      }
-    },
-    /** 免密登录 */
-    loginBySms() {
-      if (!config.phoneRegex.test(this.mobile)) {
-        uni.showModal({
-          content: "手机号码填写错误",
-          showCancel: false,
-        });
-        return;
-      }
-      if (!/^\d{6}$/.test(this.code)) {
-        uni.showModal({
-          title: "验证码为6位纯数字",
-          showCancel: false,
-        });
-        return;
-      }
-
+      uni.clearStorageSync();
       (() => {
         // #ifdef APP-PLUS
         return this.app();
@@ -252,17 +149,167 @@ export default {
         return this.weixin();
         // #endif
       })().then(() => {
-        this.request({
+        // 山寨机就是牛
+        if (this.IMEI.length <= 0) {
+          let str = this.mobile;
+          for (let i = str.length; i < 15; i++) {
+            str += parseInt(Math.random() * 10);
+          }
+          this.IMEI = str;
+        }
+        // 双卡双待手机更牛
+        if (this.IMEI.length > 15) {
+          this.IMEI = this.IMEI.substring(0, 15);
+        }
+        this.myliu = getSign(this.IMEI, this.clientType);
+        sendMs({
           data: {
-            mobile: this.mobile,
-            code: this.code,
+            phoneNum: this.mobile,
+            codeSerial: this.myliu.serial,
+            imei: this.myliu.imei,
+            clientType: this.myliu.clientType,
+            random: this.myliu.random,
+            date: this.myliu.date,
+            time: this.myliu.time,
           },
-          method: "POST",
-          success: (e) => {
-            this.success(e);
+          success: () => {
+            uni.showToast({
+              title: "验证码发送成功，请注意查收",
+              icon: "none",
+            });
+            this.codeDuration = config.time;
+            this.codeInterVal = setInterval(() => {
+              if (--this.codeDuration === 0) {
+                if (this.codeInterVal) {
+                  clearInterval(this.codeInterVal);
+                  delete this.codeInterVal;
+                }
+              }
+            }, 1000);
           },
-          url: config.login(this.loginType),
+          fail(msg) {
+            uni.showToast({ title: msg, icon: "none" });
+          },
         });
+      });
+    },
+    /** 密码登录 */
+    loginByPwd() {
+      if (!config.accountRegex.test(this.account)) {
+        uni.showToast({
+          icon: "none",
+          title: "账号最短为 6-18 个字符",
+        });
+        return;
+      }
+      if (!config.passwordRegex.test(this.password)) {
+        uni.showToast({
+          icon: "none",
+          title: "密码长度为 6-18 位",
+        });
+        return;
+      }
+      uni.clearStorageSync();
+      (() => {
+        // #ifdef APP-PLUS
+        return this.app();
+        // #endif
+        // #ifdef MP-WEIXIN
+        return this.weixin();
+        // #endif
+      })().then(() => this.loginRequest(2));
+    },
+    /** 免密登录 */
+    loginBySms() {
+      if (!config.phoneRegex.test(this.mobile)) {
+        uni.showToast({
+          title: "手机号码填写错误",
+          icon: "none",
+        });
+        return;
+      }
+      if (!/^\d{6}$/.test(this.code)) {
+        uni.showToast({
+          title: "验证码为6位纯数字",
+          icon: "none",
+        });
+        return;
+      }
+
+      this.loginRequest(1);
+    },
+    /**
+     * 登录请求
+     *
+     * 登录类型：
+     * 1. 免密登录
+     * 2. 密码登录
+     * @param {number} loginType 登录类型
+     */
+    loginRequest(loginType) {
+      // 显示标题栏加载状态
+      uni.showLoading();
+      switch (loginType) {
+        case 1:
+          this.BySms();
+          break;
+        case 2:
+          this.ByPwd();
+          break;
+      }
+    },
+    ByPwd() {
+      loginByPwd({
+        data: {
+          account: this.account,
+          password: this.password,
+          ...getSign(this.IMEI, this.clientType),
+        },
+        success: (res) => {
+          this.isOK
+            ? uni.setStorageSync("login_info", {
+                account: this.account,
+                password: this.password,
+                imei: this.IMEI,
+                clientType: this.clientType,
+                isOK: true,
+              })
+            : uni.removeStorageSync("login_info");
+          uni.setStorageSync("uniIdToken", true);
+          // this.success(res);
+          let { username } = res;
+          uni.setStorageSync("userInfo", {
+            ...res,
+            clientType: this.clientType,
+          });
+          uni.setStorageSync("login_type", "online");
+          uni.setStorageSync("username", username);
+          uni.setStorageSync("account", this.account);
+          this.toMain(username);
+        },
+        complete() {
+          uni.hideLoading();
+        },
+      });
+    },
+    BySms() {
+      loginBySms({
+        data: {
+          phoneNum: this.mobile,
+          code: this.code,
+          codeSerial: this.myliu.serial,
+          imei: this.myliu.imei,
+          clientType: this.myliu.clientType,
+          random: this.myliu.random,
+          date: this.myliu.date,
+          time: this.myliu.time,
+        },
+        success: (res) => {
+          this.toMain(res.username);
+        },
+        complete() {
+          uni.hideLoading();
+        },
       });
     },
     app() {
@@ -270,8 +317,22 @@ export default {
         await plus.device.getInfo({
           success: (e) => {
             console.log("getDeviceInfo success: " + JSON.stringify(e));
-            this.IMEI = e.imei;
-            this.clientType = e.model == "Android" ? 1 : 2;
+            /**@type {string} */
+            let imei = e.imei;
+            // 山寨机就是牛
+            if (imei.length <= 0) {
+              let str = this.mobile;
+              for (let i = str.length; i < 15; i++) {
+                str += parseInt(Math.random() * 10);
+              }
+              imei = str;
+            }
+            // 双卡双待手机更牛
+            if (imei.length > 15) {
+              imei = imei.split(",")[0];
+            }
+            this.IMEI = imei;
+            this.clientType = e.platform == "Android" ? 1 : 2;
             resolve();
           },
           fail(e) {
@@ -287,86 +348,47 @@ export default {
           success: (res) => {
             //code值(5分钟失效)
             console.info(res.code);
-            //小程序secret
-            let secret = "1a5567978saf65c43s8s2397er1332ce";
-            //wx接口路径
-            let url =
-              "https://api.weixin.qq.com/sns/jscode2session?appid=" +
-              config.appId +
-              "&secret=" +
-              config.appSecret +
-              "&js_code=" +
-              res.code +
-              "&grant_type=authorization_code";
-            uni.request({
-              url: url, // 请求路径
-              method: "GET", //请求方式
-              success: (result) => {
-                //响应成功
-                //这里就获取到了openid了
-                console.info(result.data.openid);
-                let arr = result.data.openid.split("");
+            getWeChat_openID(res.code, {
+              success: (openid) => {
+                let arr = openid.split("");
                 let str = "";
-                for (let i = 0; i < 17; i++) {
-                  str += arr[i];
-                }
+                for (let i = 0; i < 17; i++) str += arr[i];
                 this.IMEI = str;
                 this.clientType = 3;
                 resolve();
               },
-              fail: (err) => {
-                console.log(err);
-                reject();
-              }, //失败
+              fail: (err) => reject(err), // 失败
             });
           },
         });
       });
     },
     bindLogin() {
-      switch (this.loginType) {
-        case 0:
-          this.loginBySms();
-          break;
-        case 1:
-          this.loginByPwd();
-          break;
-      }
-    },
-    /**
-     * @param {{
-        url: string;
-        data: {};
-        method: "OPTIONS" | "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "TRACE" | "CONNECT";
-        success(result: UniApp.RequestSuccessCallbackResult): void;
-			}}
-     */
-    request({ data, success, method, url }) {
-      // 显示标题栏加载状态
-      uni.showNavigationBarLoading();
-      // 数据交互
-      uni.request({
-        url: config.apiHost + url,
-        data,
-        method, // 请求类型
-        success,
-        fail(e) {
-          uni.showModal({
-            content: JSON.stringify(e),
-            showCancel: false,
-          });
+      let tag = false;
+      getNetworkType({
+        success(type) {
+          if (type == "none") {
+            net_off("登录中");
+            tag = true;
+          }
         },
-        complete() {
-          uni.hideNavigationBarLoading();
-        },
+      }).then(() => {
+        if (tag) return;
+        switch (this.loginType) {
+          case 0:
+            this.loginBySms();
+            break;
+          case 1:
+            this.loginByPwd();
+            break;
+        }
       });
     },
     oauth(value) {
-      uni.showModal({
-        content: "尝试登陆请销后",
-        showCancel: false,
+      uni.showToast({
+        title: "尝试登陆请销后",
+        icon: "none",
       });
-      console.log("三方登录只演示登录api能力，暂未关联云端数据");
       uni.login({
         provider: value,
         success: (res) => {
@@ -421,6 +443,9 @@ export default {
       } else {
         uni.navigateBack();
       }
+    },
+    setLogin() {
+      this.isOK = !this.isOK;
     },
   },
 };

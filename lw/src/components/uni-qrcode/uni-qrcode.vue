@@ -1,11 +1,15 @@
 <template>
   <view>
-    <canvas :id="cid" :canvas-id="cid" :style="{width: `${size}px`, height: `${size}px`}" />
+    <canvas
+      :id="cid"
+      :canvas-id="cid"
+      :style="{ width: `${size}px`, height: `${size}px` }"
+    />
   </view>
 </template>
 
 <script>
-import uQRCode from "../../common/uqrcode.js";
+import uQRCode from "./uqrcode";
 
 export default {
   props: {
@@ -53,6 +57,7 @@ export default {
     }
   },
   methods: {
+    /**构造 */
     async make() {
       var options = {
         canvasId: this.cid,
@@ -77,9 +82,21 @@ export default {
 
       this.makeComplete(filePath);
     },
+    /**
+     * 补足
+     * @param {string} filePath 导出生成的图片路径
+     */
     makeComplete(filePath) {
       this.$emit("makeComplete", filePath);
     },
+    /**
+     * 绘制背景图片
+     * @param {{tempFilePath: string; success: success; fail: fail;}} options
+     * @callback success
+     * @param {string} path 导出生成的图片路径
+     * @callback fail
+     * @param {} err 
+     */
     drawBackgroundImage(options) {
       var ctx = uni.createCanvasContext(this.cid, this);
 
@@ -91,12 +108,9 @@ export default {
         uni.canvasToTempFilePath(
           {
             canvasId: this.cid,
-            success: (res) => {
-              options.success && options.success(res.tempFilePath);
-            },
-            fail: (error) => {
-              options.fail && options.fail(error);
-            },
+            success: (res) =>
+              options.success && options.success(res.tempFilePath),
+            fail: (error) => options.fail && options.fail(error),
           },
           this
         );
@@ -106,15 +120,20 @@ export default {
       return new Promise((resolve, reject) => {
         this.drawBackgroundImage({
           filePath: filePath,
-          success: (res) => {
-            resolve(res);
-          },
-          fail: (error) => {
-            reject(error);
-          },
+          success: (res) => resolve(res),
+          fail: (error) => reject(error),
         });
       });
     },
+    /**
+     * 填充圆角
+     * @param {UniApp.CanvasContext} ctx 画布
+     * @param {number} r 半径
+     * @param {number} x X轴坐标
+     * @param {number} y Y轴坐标
+     * @param {number} w 宽
+     * @param {number} h 高
+     */
     fillRoundRect(ctx, r, x, y, w, h) {
       ctx.save();
       ctx.translate(x, y);
@@ -123,9 +142,9 @@ export default {
       ctx.lineTo(r, h);
       ctx.arc(r, h - r, r, Math.PI / 2, Math.PI);
       ctx.lineTo(0, r);
-      ctx.arc(r, r, r, Math.PI, (Math.PI * 3) / 2);
+      ctx.arc(r, r, r, Math.PI, Math.PI * 3 / 2);
       ctx.lineTo(w - r, 0);
-      ctx.arc(w - r, r, r, (Math.PI * 3) / 2, Math.PI * 2);
+      ctx.arc(w - r, r, r, Math.PI * 3 / 2, Math.PI * 2);
       ctx.lineTo(w, h - r);
       ctx.closePath();
       ctx.setFillStyle("#ffffff");
@@ -161,12 +180,9 @@ export default {
         uni.canvasToTempFilePath(
           {
             canvasId: this.cid,
-            success: (res) => {
-              options.success && options.success(res.tempFilePath);
-            },
-            fail: (error) => {
-              options.fail && options.fail(error);
-            },
+            success: (res) =>
+              options.success && options.success(res.tempFilePath),
+            fail: (error) => options.fail && options.fail(error),
           },
           this
         );
@@ -176,15 +192,14 @@ export default {
       return new Promise((resolve, reject) => {
         this.drawLogo({
           filePath: filePath,
-          success: (res) => {
-            resolve(res);
-          },
-          fail: (error) => {
-            reject(error);
-          },
+          success: (res) => resolve(res),
+          fail: (error) => reject(error),
         });
       });
     },
+    /**
+     * @param {{ canvasId: string; componentInstance: this; text: string; size: number; margin: number; backgroundColor: string; foregroundColor: string;}} options
+     */
     async makeSync(options) {
       return new Promise((resolve, reject) => {
         uQRCode.make({
@@ -195,12 +210,8 @@ export default {
           margin: options.margin,
           backgroundColor: options.backgroundColor,
           foregroundColor: options.foregroundColor,
-          success: (res) => {
-            resolve(res);
-          },
-          fail: (error) => {
-            reject(error);
-          },
+          success: (res) => resolve(res),
+          fail: (error) => reject(error),
         });
       });
     },

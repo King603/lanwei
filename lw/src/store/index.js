@@ -20,7 +20,11 @@ const store = new Vuex.Store({
 		logout(state) {
 			state.userName = "";
 			state.hasLogin = false;
-		}
+		},
+		register(state, userName) {
+			state.userName = userName || '新用户';
+			state.hasLogin = true;
+		},
 	}
 })
 
